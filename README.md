@@ -31,7 +31,7 @@
 
 -- 结构定义
 与语言无关
-		
+````		
 module{
 	code:
 	name:
@@ -65,4 +65,4 @@ plugin{
 	script:
 	init:
 }
-
+````	
