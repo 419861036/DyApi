@@ -1,0 +1,567 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>编辑资源</title>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<link rel="stylesheet"
+	href="/admin/std/dist/layuiadmin/layui/css/layui.css" media="all">
+
+<link rel=stylesheet href="/html/lib/code/doc/docs.css">
+
+<link rel="stylesheet" href="/html/lib/code/lib/codemirror.css">
+<link rel="stylesheet" href="/html/lib/code/theme/eclipse.css">
+<link rel="stylesheet" href="/html/lib/code/addon/fold/foldgutter.css">
+<link rel="stylesheet" href="/html/lib/code/addon/hint/show-hint.css">
+<link rel="stylesheet" href="/html/lib/code/addon/dialog/dialog.css">
+<link rel="stylesheet" href="/html/lib/code/addon/search/matchesonscrollbar.css">  
+
+<style>
+.CodeMirror {
+	border-top: 1px solid #888;
+	border-bottom: 1px solid #888;
+	height: 100%;
+}
+.CodeMirror-scroll {
+  #max-height: 400px; 
+}
+.CodeMirror-focused .cm-matchhighlight {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFklEQVQI12NgYGBgkKzc8x9CMDAwAAAmhwSbidEoSQAAAABJRU5ErkJggg==);
+    background-position: bottom;
+    background-repeat: repeat-x;
+}
+.cm-matchhighlight {background-color: lightgreen}
+.CodeMirror-selection-highlight-scrollbar {background-color: lightgreen}
+dt {font-family: monospace; color: #666;}
+</style>
+</head>
+<body>
+	<div class="layui-form" lay-filter="layuiadmin-app-form-list"
+		id="layuiadmin-app-form-list" style="padding: 20px 30px 0 0;">
+		<div class="layui-form-item " style="z-index: 999;background-color: #ccc" >
+			<input type="hidden" name="id" id="id"/>
+			 <input
+				type="button" lay-submit lay-filter="layuiadmin-app-form-edit"  class="layui-btn layui-btn-normal"
+				id="layuiadmin-app-form-edit" value="确认编辑">
+		</div>
+		<div class="layui-form-item " style="margin-top: 50px;">
+			<textarea id="code" name="code" class="layui-textarea">
+			</textarea>
+		</div>
+	</div>
+    <script src="/html/lib/code/lib/codemirror.js"></script>
+    <!-- 搜索-->
+    <script src="/html/lib/code/addon/dialog/dialog.js"></script>
+    <script src="/html/lib/code/addon/search/searchcursor.js"></script>
+    <script src=" /html/lib/code/addon/search/search.js"></script>
+    <script src=" /html/lib/code/addon/scroll/annotatescrollbar.js"></script>
+    <script src="/html/lib/code/addon/search/matchesonscrollbar.js"></script>
+    <script src="/html/lib/code/addon/search/jump-to-line.js"></script>
+    
+    
+    <script src="/html/lib/code/addon/hint/show-hint.js"></script>
+    <script src="/html/lib/code/addon/hint/anyword-hint.js"></script>
+    
+    <script src="/html/lib/code/addon/hint/xml-hint.js"></script>
+    <script src="/html/lib/code/addon/hint/html-hint.js"></script>
+    <script src="/html/lib/code/mode/xml/xml.js"></script>
+    <script src="/html/lib/code/mode/javascript/javascript.js"></script>
+    <script src="/html/lib/code/mode/css/css.js"></script>
+    <script src="/html/lib/code/mode/htmlmixed/htmlmixed.js"></script>
+    <script src="/html/lib/code/mode/groovy/groovy.js"></script>
+    <!-- 匹配高亮-->
+    <script src="/html/lib/code/addon/search/match-highlighter.js"></script>
+    <!-- 注释-->  
+    <script src="/html/lib/code/addon/comment/continuecomment.js"></script>
+    <script src="/html/lib/code/addon/comment/comment.js"></script>
+    <!-- 显示缩进行-->
+    <script src="/html/lib/code/addon/display/rulers.js"></script>
+    <!-- 折叠
+    <script src="/html/lib/code/addon/fold/foldcode.js"></script>
+    <script src="/html/lib/code/addon/fold/foldgutter.js"></script>
+    <script src="/html/lib/code/addon/fold/brace-fold.js"></script>
+    <script src="/html/lib/code/addon/fold/xml-fold.js"></script>
+    <script src="/html/lib/code/addon/fold/indent-fold.js"></script> 
+    <script src="/html/lib/code/addon/fold/comment-fold.js"></script>
+     -->
+	<script src="/html/layui/layui.js"></script>
+
+	<script>
+		var editor=null;
+		layui.config({
+			base : '/html/' //静态资源所在路径
+		}).extend({
+			index : 'lib/index' //主入口模块
+		}).use([ 'index', 'form' ], function() {
+         var $ = layui.$, form = layui.form;
+			layui.$(document).keydown(function(e){
+          //70:F 72:G 72:H
+          if(e.ctrlKey && e.which==70||
+            e.ctrlKey && e.which==71||
+             e.ctrlKey && e.which==72||
+             e.altKey && e.which==70
+            ){
+            e.preventDefault();
+            e.keyCode = false;//加上这一句
+          }
+        });
+			function getQueryVariable(variable) {
+				var query = window.location.search.substring(1);
+				var vars = query.split("&");
+				for (var i = 0; i < vars.length; i++) {
+					var pair = vars[i].split("=");
+					if (pair[0] == variable) {
+						return pair[1];
+					}
+				}
+				return (false);
+			}
+			
+			var id = getQueryVariable("id");
+        var name = getQueryVariable("name");
+        if(name){
+           document.title=decodeURIComponent(name);
+        }
+			if (id) {
+				$("#id").val(id);
+				$.ajax({
+					async : true,
+					"url" : "/api/resource/get" + "?id=" + id,
+					"global" : false,
+					"type" : "GET",
+					"dataType" : "json",
+					"timeout" : "60000",
+					"traditional" : true,
+					"success" : function(a, b, c) {
+                    var path=a.v[0].path
+                    var mode={name: "xml", globalVars: true};
+                   if(path && path.endsWith(".java")){
+                        mode={name: "text/x-groovy", globalVars: true};
+                   }
+                var comp = [
+                    ["here", "hither"],
+                    ["asynchronous", "nonsynchronous"],
+                    ["completion", "achievement", "conclusion", "culmination", "expirations"],
+                    ["hinting", "advive", "broach", "imply"],
+                    ["function","action"],
+                    ["provide", "add", "bring", "give"],
+                    ["synonyms", "equivalents"],
+                    ["words", "token"],
+                    ["each", "every"]
+                ];
+                var dummy = {
+                    attrs: {
+                        color: ["red", "green", "blue", "purple", "white", "black", "yellow"],
+                        size: ["large", "medium", "small"],
+                        description: null
+                    },
+                    children: []
+                };
+
+                var tags1 = {
+                    "!top": ["top"],
+                    "!attrs": {
+                        id: null,
+                        class: ["A", "B", "C"]
+                    },
+                    top: {
+                        attrs: {
+                            lang: ["en", "de", "fr", "nl"],
+                            freeform: null
+                        },
+                        children: ["animal", "plant"]
+                    },
+                    animal: {
+                        attrs: {
+                            name: null,
+                            isduck: ["yes", "no"]
+                        },
+                        children: ["wings", "feet", "body", "head", "tail"]
+                    },
+                    plant: {
+                        attrs: {name: null},
+                        children: ["leaves", "stem", "flowers"]
+                    },
+                    wings: dummy, feet: dummy, body: dummy, head: dummy, tail: dummy,
+                    leaves: dummy, stem: dummy, flowers: dummy
+                };
+                var tags={
+                    rule:{
+                        attrs: {
+                            name: null
+                        },
+                        children: ["seg"]
+                    },
+                    seg:{
+                        attrs: {
+                            name: null
+                        },
+                        children: ["parse","bean","var","exeSql","if","resp","go","empty","append","page","print","count","file","cookie","session","route","dbinfo","shell","filter","user"]
+                    },
+                    parse:{
+                        attrs: {
+                            name: null,
+                            var: null
+                        }
+                    },
+                    bean:{
+                        attrs: {
+                            name: null,
+                            key: null,
+                            parseBody:["true", "false"]
+                        },
+                        children: ["field"]
+                    },
+                    field:{
+                        attrs: {
+                            name: null,
+                            key: null,
+                            mock:["@string('lower', 5)", "@integer(1, 10)"],
+                            reg:null,
+                            verify:["required"]
+                        }
+                    },
+                    var:{
+                        attrs: {
+                            name: null,
+                            var: null,
+                            key: null,
+                            type:["date","uuid"],
+                            init:["0"],
+                            decode:["true","false"],
+                            size:null,
+                            childKey:null,
+                            index:null
+                        }
+                    },
+                    if:{
+                        attrs: {
+                            name: null,
+                            js: ["cnt>0"],
+                            true: null,
+                            false: null
+                        }
+                    },
+                    go:{
+                        attrs: {
+                            name: null,
+                            to: null
+                        }
+                    },
+                    resp:{
+                        attrs: {
+                            name: null,
+                            code: ["200"],
+                            msg:null,
+                            data:null
+                        }
+                    },
+                    empty:{
+                        attrs: {
+                            name: null
+                        }
+                    },
+                    exeSql:{
+                        attrs: {
+                            name: null,
+                            var:null,
+                            cols:["vo.name,upTime,vo.id"],
+                            sql:["update xx set name=?,where id=?"]
+                        }
+                    },
+                    append:{
+                        attrs: {
+                            name: null,
+                            key:["sql"],
+                            when:["变量名"],
+                            value:[" and appName like concat('%',?,'%') "]
+                        }
+                    },
+                    page:{
+                        attrs: {
+                            name: null,
+                            cols:["vo.name,upTime,vo.id"],
+                            page:["当前页"],
+                            pageSize:["页数"],
+                            sql:["#{sql}"],
+                            param:[" name,path "]
+                        }
+                    },
+                    print:{
+                        attrs: {
+                            name: null,
+                            var:["变量名"],
+                            sys:["系统变量名"]
+                        }
+                    },
+                    count:{
+                            attrs: {
+                                name: null,
+                                var:["变量名"],
+                                inc:["增加","1"],
+                                dec:["减少","1"],
+                                init:["初始值"]
+                            }
+                    },
+                    file:{
+                        attrs: {
+                            name: null,
+                            op:["rename","newfile","mkdir","del","read","write","list"],
+                            dest:["目标文件"],
+                            dir:["源文件"],
+                            folder:["mkdir参数"],
+                            startLine:["read参数 开始位置"],
+                            limit:["read参数 限制行数"]
+                        }
+                    },
+                    session:{
+                        attrs: {
+                            name: null,
+                            op:["remove","get","put"],
+                            key:[""],
+                            innerArg:["true","false","get相关"],
+                            upDate:["true","false","get相关"],
+                            var:["get相关"],
+                            timeout:["put相关"],
+                            value:["put相关"]
+                        }
+                    }
+                };
+                var rulers = [];
+                for (var i = 1; i <= 6; i++) {
+                    rulers.push({color:"#fcc", column: i * 4, lineStyle: "dashed"});
+                }
+                editor =CodeMirror.fromTextArea(document.getElementById("code"), {
+                    lineNumbers: true,
+                    lineWrapping: false,
+                    styleActiveLine: true,// 选中行高亮 TODO
+                    matchBrackets: true, // 匹配括号
+                    indentUnit: 4,//缩进单位，值为空格数，默认为2
+                    tabSize:4,//tab字符的宽度
+                    indentWithTabs:false,//在缩进时，是否需要把 n*tab宽度个空格替换成n个tab字符，默认为false 。
+                    lint: true, // 代码出错提醒
+                    mode: mode,
+                    smartIndent:false,
+                    highlightSelectionMatches: {showToken: /\w/, annotateScrollbar: true},
+                 //foldGutter: true,
+                //gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+                rulers:rulers,
+                 extraKeys : {
+                   "Alt-/" : "autocomplete",
+                   "Ctrl-L":"jumpToLine",
+                   "Ctrl-H":"replace",
+                    "Ctrl-F":"findPersistent",
+                    "Ctrl-/": commentFunction,
+                    Tab: (cm) => {
+                        if (cm.somethingSelected()) {      // 存在文本选择
+                          cm.indentSelection('add');    // 正向缩进文本
+                          //cm.indentLine(cm.getCursor().line, "add");
+                        } else {   
+                          cm.replaceSelection("    ", "end", "+input");
+                        }   
+                    }, 
+                    "Shift-Tab": (cm) => {              // 反向缩进   
+                        if (cm.somethingSelected()) {
+                            cm.indentSelection('subtract');  // 反向缩进
+                        } else {
+                            // cm.indentLine(cm.getCursor().line, "subtract");  // 直接缩进整行
+                            const cursor = cm.getCursor();
+                            cm.setCursor({line: cursor.line, ch: cursor.ch - 4});  // 光标回退 indexUnit 字符
+                        }   
+                        return ;
+                    }
+                 },
+                 hintOptions: {schemaInfo: tags,hint1: function(cm, option){
+                     return new Promise((accept) => {
+                        setTimeout(() => {
+                          let WORD = /[\w\[\]\"\.$]+/
+                          let cursor = cm.getCursor(), curLine = cm.getLine(cursor.line)
+                          let start = cursor.ch, end = cursor.ch
+                          while (start && WORD.test(curLine.charAt(start - 1))) {
+                            --start
+                          }
+                          let curWord = start != end && curLine.slice(start, end)
+                          let list = [], isDefinedObj = false
+                          if (curWord && curWord.length>1) {
+                            if(mode.name!="text/x-groovy"){
+                                return;
+                            }
+                            if (list.length === 0) {
+                              var dotIndex = curWord.lastIndexOf('.'),
+                                  memberStr = curWord.slice(dotIndex + 1),
+                                  comList = []
+                              //comList = [{"displayText":"test1","text":"test1"},{"displayText":"test2","text":"test2"},]
+                              if(dotIndex==-1){
+                                  layui.$.ajax({
+                                        async : true,
+                                        "url" : "/api/resource/class/page?page=1&limit=10&path=&package=&className="+curWord+"",
+                                        "global" : false,
+                                        "type" : "POST",
+                                        "contentType": "application/json; charset=utf-8",
+                                        "dataType" : "json",
+                                        "timeout" : "60000",
+                                        "data" : JSON.stringify({}),
+                                        "traditional":true,
+                                        "success" : function(a,b,c){
+                                            if(a&& a.v&& a.v.collection){
+                                               var list=a.v.collection;
+                                               for(var i=0; i<list.length;i++){
+                                                   var className=list[i].className;
+                                                   var package=list[i].package;
+                                                   var funcData=className+" "+package;
+                                                   var funcDef={"displayText":funcData,"text":package+"."+className};
+                                                   comList.push(funcDef);
+                                               }
+
+                                               return accept({list: comList,
+                                                from: CodeMirror.Pos(cursor.line, start),
+                                                to: CodeMirror.Pos(cursor.line, end)})
+
+                                            }
+                                            //parent.layui.table.reload('LAY-app-content-list'); //重载表格
+                                            //parent.layer.close(e); //再执行关闭 
+                                        },
+                                        "error" : function(err, msg, code) {
+                                            return false;
+                                        }
+                                    });
+                              
+                              }else{
+                                  var pos1=curWord.lastIndexOf('.',dotIndex-1);
+                                  var packageName=curWord.slice(0,pos1 );
+                                  var clasName=curWord.slice(pos1+1,dotIndex );
+                                  layui.$.ajax({
+                                        async : true,
+                                        "url" : "/api/resource/method/page?page=1&limit=10&path=&package="+packageName+"&absClassName="+clasName+"&methodName="+memberStr,
+                                        "global" : false,
+                                        "type" : "POST",
+                                        "contentType": "application/json; charset=utf-8",
+                                        "dataType" : "json",
+                                        "timeout" : "60000",
+                                        "data" : JSON.stringify({}),
+                                        "traditional":true,
+                                        "success" : function(a,b,c){
+                                            if(a&& a.v&& a.v.collection){
+                                               var list=a.v.collection;
+                                               for(var i=0; i<list.length;i++){
+                                                   var packageName=list[i].packageName;
+                                                   var className=list[i].className;
+                                                   var methodName=list[i].methodName;
+                                                   var param=list[i].param;
+                                                   var returnType=list[i].returnType;
+                                                   //var val=StringUtil.isEmpty();
+                                                   var params=JSON.parse(param);
+                                                   var pDef="";
+                                                   var pDef1="";
+                                                   for(var j=0;j<params.length;j++){
+                                                       var p=params[j];
+                                                       var varName=p.varName;
+                                                       if(!varName){
+                                                           varName="arg"+j;
+                                                       }
+                                                       pDef=pDef+p.simpleName+" "+varName;
+                                                       pDef1=pDef1+varName
+                                                       if(j!=params.length-1){
+                                                           pDef=pDef+",";
+                                                           pDef1=pDef1+",";
+                                                       }
+                                                   }
+                                                   var funcData1=className+"."+methodName+"("+pDef+") "+returnType;
+                                                   var funcData2=packageName+"."+className+"."+methodName+"("+pDef1+")";
+                                                   var funcDef={"displayText":funcData1,"text":funcData2};
+                                                   comList.push(funcDef);
+                                               }
+
+                                               return accept({list: comList,
+                                                from: CodeMirror.Pos(cursor.line, start),
+                                                to: CodeMirror.Pos(cursor.line, end)})
+
+                                            }
+                                            //parent.layui.table.reload('LAY-app-content-list'); //重载表格
+                                            //parent.layer.close(e); //再执行关闭 
+                                        },
+                                        "error" : function(err, msg, code) {
+                                            return false;
+                                        }
+                                    });
+                              }
+                            }
+                          }else{
+                            //TODO
+                            var line = cm.getLine(cursor.line);
+//                             var cursor = cm.getCursor(), line = cm.getLine(cursor.line);
+//                             var start = cursor.ch, end = cursor.ch
+                            while (start && /\w/.test(line.charAt(start - 1))) --start
+                            while (end < line.length && /\w/.test(line.charAt(end))) ++end
+                            var word = line.slice(start, end).toLowerCase()
+                            for (var i = 0; i < comp.length; i++) {
+                                if (comp[i].indexOf(word) != -1){
+                                    return accept({list: comp[i],
+                                             from: CodeMirror.Pos(cursor.line, start),
+                                             to: CodeMirror.Pos(cursor.line, end)})
+                                }
+                            }
+                            return accept(null);
+                          }
+                         
+                          }, 200) 
+
+                      })
+                 }, completeSingle: false}
+                 //,value: document.documentElement.innerHTML
+                });
+                function commentFunction(){
+                    editor.toggleComment();
+                }
+                editor.focus();
+                //editor.foldCode(CodeMirror.Pos(13, 0));
+                $(".CodeMirror-scroll").css("max-height",$(window).height()-200)
+						if (a.v[0].config) {
+							editor.setValue(a.v[0].config)
+						}else{
+                	
+						}
+						//parent.layui.table.reload('LAY-app-content-list'); //重载表格
+						//parent.layer.close(index); //再执行关闭 
+					},
+					"error" : function(err, msg, code) {
+						return false;
+					}
+				});
+			}
+			layui.form.on("submit(layuiadmin-app-form-edit)", function(i) {
+				editContent(i)
+			})
+			function editContent(i){
+				var field = i.field;
+				field.config=editor.getValue();
+				layui.$.ajax({
+					async : true,
+					"url" : "/api/resource/modData",
+					"global" : false,
+					"type" : "POST",
+					"contentType": "application/json; charset=utf-8",
+					"dataType" : "json",
+					"timeout" : "60000",
+					"data" : JSON.stringify(field),
+					"traditional":true,
+					"success" : function(a,b,c){
+						layer.msg('修改资源成功！');
+						//parent.layui.table.reload('LAY-app-content-list'); //重载表格
+						//parent.layer.close(e); //再执行关闭 
+					},
+					"error" : function(err, msg, code) {
+						return false;
+					}
+				});
+			}
+			
+		})
+	</script>
+</body>
+</html>

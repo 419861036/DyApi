@@ -1,0 +1,43 @@
+#数据库设计
+//java 文件索引
+java_index
+    path//路径
+    type//文件类型
+    md5//指纹
+    state//索引状态 已处理，未处理
+ CREATE TABLE `java_index` (
+`id`  int(11) NULL AUTO_INCREMENT ,
+`path`  varchar(255) NULL COMMENT '路径' ,
+`type`  varchar(50) NULL COMMENT '文件类型' ,
+`md5`  varchar(36) NULL COMMENT '指纹' ,
+`state`  varchar(20) NULL COMMENT '索引状态 已处理，未处理' ,
+PRIMARY KEY (`id`)
+)
+;
+
+   
+//类结构信息
+class_info
+    packageName//包名
+    className//类名
+    java_index//文件索引
+    methodName//方法名称
+    param//? 怎么表达
+    lineNUm//行号
+    return //返回类型
+
+ CREATE TABLE `method_info` (
+`id`  int(11) NULL AUTO_INCREMENT ,
+`path`  varchar(255) NULL COMMENT '源码文件路径可能是jar里面' ,
+`packageName`  varchar(255) NULL COMMENT '包名' ,
+`className`  varchar(100) NULL COMMENT '类名' ,
+`javaIndex`   int(11) NULL COMMENT '文件索引' ,
+`methodName`  varchar(50) NULL COMMENT '方法名称' ,
+`param`  varchar(50) NULL COMMENT '参数' ,
+`lineNum`  varchar(50) NULL COMMENT '行号' ,
+`return`  varchar(50) NULL COMMENT '返回类型' ,
+PRIMARY KEY (`id`)
+)
+;
+
+

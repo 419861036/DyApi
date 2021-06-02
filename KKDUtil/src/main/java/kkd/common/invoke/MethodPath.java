@@ -1,0 +1,9 @@
+package kkd.common.invoke;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.RUNTIME) 
+public @interface MethodPath {
+	String value();
+}

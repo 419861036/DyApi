@@ -1,0 +1,255 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>2020年年末活动</title>
+    <meta name="page-view-size" content="1280*720" />
+    <!--TODO-->
+    <link type="text/css" rel="stylesheet" href="css/hongbao.s.css"/>
+</head> 
+<body>
+   <div class="bg"><img src="img/bg.png"></div>
+   <div class="container">
+    
+    <div class="my_account">您的账号:<span id="userIdDiv"></span></div>
+    <div class="win_list_top" id="win_list_top"></div>
+    <!--锤子-->
+    <div class="hongbao">
+        <div style="display: none;" id="test"></div>
+        <div class="item" id="hongbao_0">
+            <img src="img/hongbao.png">
+        </div>
+    </div>
+    <!--奖品特等奖剩余-->
+    <div class="jp_lev0_cnt" id="prize_txt_4">
+        剩余<label>-</label>
+    </div>
+    <!--奖品一等奖剩余-->
+    <div class="jp_lev1_cnt" id="prize_txt_0">
+        剩余<label>-</label>
+    </div>
+    <!--奖品一等奖剩余-->
+    <div class="jp_lev2_cnt" id="prize_txt_1">
+        剩余<label>-</label>
+    </div>
+    <!--奖品一等奖剩余-->
+    <div class="jp_lev3_cnt" id="prize_txt_2">
+        剩余<label>-</label>
+    </div>
+    <!--奖品一等奖剩余-->
+    <div class="jp_lev4_cnt" id="prize_txt_3">
+        剩余<label>-</label>
+    </div>
+    
+    <!--活动规则-->
+    <div class="act_rule">
+        <div class="item" id="act_rule_0">
+            <img src="img/act_rule.png">
+        </div>
+    </div>
+    <!--中奖次数查询-->
+    <div class="count">
+        <div class="item" id="count_0">
+            <lable>今日可抽奖<span id="currentDayAbleNum"></span>次</lable>
+        </div>
+    </div>
+    <!--中奖查询-->
+    <div class="winner">
+        <div class="item" id="winner_0">
+            <img src="img/winner.png">
+        </div>
+    </div>
+    
+  </div>
+  <!-- 规则弹出-->
+  <div class="act_rule_pop" id="act_rule_pop" style="visibility: hidden">
+    <div class="bg"><img src="img/act_rule_page.png"></div>
+    <div class="close">
+        <div class="item" id="act_rule_close_0">
+            <img src="img/close.png">
+        </div>
+    </div>
+  </div>
+  <!-- 中奖结果-未中奖-->
+  <div class="no_result_pop" id="no_result_pop" style="visibility: hidden">
+    <div class="bg"></div>
+    <div class="hongbao">
+        <img src="img/result.png"/>
+        <div class="tip" id="no_result_tip">
+            <label>今日抽奖次数已用完</label>
+        </div>
+        <div class="btn">
+            <div class="item" id="no_result_btn_0">
+                <img src="img/result_back.png">
+            </div>
+        </div>
+    </div>
+  </div>
+  <!-- 中奖结果-->
+  <div class="result_pop" id="result_pop" style="visibility: hidden">
+    <div class="bg"></div>
+    <div class="tip" id="result_tip">
+        <label></label>
+    </div>
+    <div class="hongbao">
+        <img src="img/result.png"/>
+        <div class="tip" id="no_result_tip">
+            <label>恭喜您<br/>获得一等奖</label>
+        </div>    
+        <div class="btn">
+            <div class="item" id="result_btn_0">
+                <img src="img/result_btn.png">
+            </div>
+        </div>
+    </div>
+  </div>
+  <!-- 填写手机号-->
+  <div class="phone_pop" id="phone_pop" style="visibility: hidden">
+    <div class="bg"><img src="img/pop_bg.png"></div>
+    <div class="close">
+        <div class="item" id="phone_close_0">
+            <img src="img/close.png">
+        </div>
+    </div>
+    <div class="box">
+        <div class="phone">
+            <div class="input_phone">
+                <div class="text" id="input_phone_text"></div>
+                <div class="input_phone_tips" id="input_phone_tips"></div>
+                <div class="item" id="input_phone_0">
+                </div>
+            </div>
+            <div class="input_phone_savebtn">
+                <div class="item" id="input_phone_savebtn_0">
+                    <img src="img/save.png">
+                </div>
+            </div>
+            <div class="input_phone_delbtn">
+                <div class="item" id="input_phone_delbtn_0">
+                    <img src="img/del.png">
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+  <!-- 查询中奖结果页面-->
+  <div class="winner_list_pop" id="winner_list_pop" style="visibility: hidden">
+    <div class="bg"><img src="img/pop_bg.png"></div>
+    <div class="close">
+        <div class="item" id="winner_list_close_0">
+            <img src="img/close.png">
+        </div>
+    </div>
+    <div class="box">
+        <div class="winner_list">
+            <div class="item" id="winner_list_0">
+                <div class="ListTitle">
+                    <span class="titleNo">账号</span>
+                    <span class="titlePhone">联系方式</span>
+                    <span class="titlePrize">奖品名称</span>
+                </div>
+                <div class="listWinner" id="tbody">
+                    <!--
+                    <div class="winner">
+                        <div class="winnerNo">i520123456789@itv</div>
+                        <div class="winnerPhone">15689098765</div>
+                        <div class="winnerPrize">价值4000元礼品</div>
+                    </div>
+                    <div class="winner" style="top: 35px;">
+                        <div class="winnerNo">i520123456789@itv</div>
+                        <div class="winnerPhone">15689098765</div>
+                        <div class="winnerPrize">价值4000元礼品</div>
+                    </div>
+                    <div class="winner" style="top: 70px;">
+                        <div class="winnerNo">i520123456789@itv</div>
+                        <div class="winnerPhone">15689098765</div>
+                        <div class="winnerPrize">价值4000元礼品</div>
+                    </div>
+                    <div class="winner" style="top: 105px;">
+                        <div class="winnerNo">i520123456789@itv</div>
+                        <div class="winnerPhone">15689098765</div>
+                        <div class="winnerPrize">价值4000元礼品</div>
+                    </div>
+                    <div class="winner" style="top: 140px;">
+                        <div class="winnerNo">i520123456789@itv</div>
+                        <div class="winnerPhone">15689098765</div>
+                        <div class="winnerPrize">价值4000元礼品</div>
+                    </div>
+                    -->
+                </div>
+            </div>
+        </div>
+        <div class="my_account" id="userAccount">
+            i5207817263@itv
+        </div>
+        <div class="my_tel">
+            <div class="text" id="my_tel_text"></div>
+            <div class="my_tel_tips" id="my_tel_tips"></div>
+            <div class="item" id="my_tel_0">
+                <img src="img/my_tel_input.png"/>
+            </div>
+        </div>
+        <div class="my_tel_delbtn">
+            <div class="item" id="my_tel_delbtn_0">
+                <img src="img/tel_del.png">
+            </div>
+        </div>
+        <div class="my_tel_savebtn">
+            <div class="item" id="my_tel_savebtn_0">
+                <img src="img/tel_save.png">
+            </div>
+        </div>
+    </div>
+  </div>
+  <!-- 订购页面-->
+  <div class="order_pop" id="order_pop" style="visibility: hidden">
+    <div class="bg"><img src="img/pop_bg.png"></div>
+    <div class="close">
+        <div class="item" id="order_close_0">
+            <img src="img/close.png">
+        </div>
+    </div>
+    <div class="box">
+        <div class="order_video">
+            <div class="item" id="order_video_0">
+                <img src="img/ok_buy.png">
+            </div>
+        </div>
+        <div class="order_game">
+            <div class="item" id="order_game_0">
+                <img src="img/ok_buy.png">
+            </div>
+        </div>
+    </div>
+  </div>
+  <!-- 挽留页面-->
+  <div id="retainPage" class="retainPage">
+    <div class="mask"></div>
+    <div class="bg"><img src="img/retainPage/bg.png"></div>
+    <div class="btn_continue">
+        <div id="retain_0" class="btn focus">
+            <img src="img/retainPage/btn_continue.png" alt="">
+        </div>
+    </div>
+    <div class="btn_exit">
+        <div id="retain_1" class="btn" style="left:708px;">
+            <img src="img/retainPage/btn_exit.png" alt="">
+        </div>
+    </div>
+    <div id="retainList" class="contlist">
+        <div id="retainItem_0" class="item">
+            <!--TODO -->
+            <img src="img/retainPage/pic_01.png" alt=""> 
+        </div>
+        <div id="retainItem_1" class="item">
+            <!--TODO -->
+            <img src="img/retainPage/pic_02.png" alt="">
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../js/eZoneSC.js"></script>
+<script type="text/javascript" src="../../js/common.js"></script>
+<!--TODO-->
+<script type="text/javascript" src="js/hongbao.s.js"></script>
+</html>

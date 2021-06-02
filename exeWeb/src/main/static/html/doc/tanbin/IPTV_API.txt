@@ -1,0 +1,1466 @@
+
+
+
+
+
+
+
+
+游戏平台接口规范
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+修订记录
+
+
+日期	修订版本	修改章节	修改描述	作者
+2016-12-15	V1.0	all		check_null
+				
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+目录
+1.	目的范围	8
+2.	接口详情	8
+2.1	获取栏目详情	8
+2.1.1	接口功能	8
+2.1.2	请求方式	9
+2.1.3	接口原型	9
+2.1.4	参数说明	9
+2.1.5	返回参数	9
+2.1.6	请求示例	10
+2.1.7	返回示例	10
+2.2	获取栏目列表	10
+2.2.1	接口功能	10
+2.2.2	请求方式	10
+2.2.3	接口原型	10
+2.2.4	参数说明	10
+2.2.5	返回参数	10
+2.2.6	请求示例	11
+2.2.7	返回示例	11
+2.3	获取产品详情	12
+2.3.1	接口功能	12
+2.3.2	请求方式	12
+2.3.3	接口原型	12
+2.3.4	参数说明	12
+2.3.5	返回参数	12
+2.3.6	请求示例	13
+2.3.7	返回示例	13
+2.4	获取内容详情	13
+2.4.1	接口功能	13
+2.4.2	请求方式	14
+2.4.3	接口原型	14
+2.4.4	参数说明	14
+2.4.5	返回参数	14
+2.4.6	请求示例	15
+2.4.7	返回示例	15
+2.5	获取内容列表	16
+2.5.1	接口功能	16
+2.5.2	请求方式	16
+2.5.3	接口原型	16
+2.5.4	参数说明	16
+2.5.5	返回参数	16
+2.5.6	请求示例	18
+2.5.7	返回示例	18
+2.6	获取内容列表	18
+2.6.1	接口功能	18
+2.6.2	请求方式	18
+2.6.3	接口原型	18
+2.6.4	参数说明	18
+2.6.5	返回参数	19
+2.6.6	请求示例	20
+2.6.7	返回示例	20
+2.7	按关键字查找内容	20
+2.7.1	接口功能	20
+2.7.2	请求方式	21
+2.7.3	接口原型	21
+2.7.4	参数说明	21
+2.7.5	返回参数	21
+2.7.6	请求示例	23
+2.7.7	返回示例	23
+2.8	鉴权	23
+2.8.1	接口功能	23
+2.8.2	请求方式	23
+2.8.3	接口原型	23
+2.8.4	参数说明	23
+2.8.5	返回参数	24
+2.8.6	请求示例	24
+2.8.7	返回示例	24
+2.9	订购	25
+2.9.1	接口功能	25
+2.9.2	请求方式	25
+2.9.3	接口原型	25
+2.9.4	参数说明	25
+2.9.5	返回参数	25
+2.9.6	请求示例	26
+2.9.7	返回示例	26
+2.10	订购确认	26
+2.10.1	接口功能	26
+2.10.2	请求方式	26
+2.10.3	接口原型	26
+2.10.4	参数说明	27
+2.10.5	返回参数	27
+2.10.6	请求示例	28
+2.10.7	返回示例	28
+2.11	UserToken更新	28
+2.11.1	接口功能	28
+2.11.2	请求方式	28
+2.11.3	接口原型	28
+2.11.4	参数说明	28
+2.11.5	返回参数	29
+2.11.6	请求示例	29
+2.11.7	返回示例	29
+2.12	订单信息	29
+2.12.1	接口功能	29
+2.12.2	请求方式	29
+2.12.3	接口原型	30
+2.12.4	参数说明	30
+2.12.5	返回参数	30
+2.12.6	请求示例	31
+2.12.7	返回示例	31
+2.13	探针上报	31
+2.13.1	接口功能	31
+2.13.2	请求方式	31
+2.13.3	接口原型	31
+2.13.4	参数说明	31
+2.13.5	返回参数	32
+2.13.6	请求示例	32
+2.13.7	返回示例	33
+2.14	获取活动详情	33
+2.14.1	接口功能	33
+2.14.2	请求方式	33
+2.14.3	接口原型	33
+2.14.4	参数说明	33
+2.14.5	返回参数	33
+2.14.6	请求示例	34
+2.14.7	返回示例	34
+2.15	获取活动列表	34
+2.15.1	接口功能	34
+2.15.2	请求方式	34
+2.15.3	接口原型	35
+2.15.4	参数说明	35
+2.15.5	返回参数	35
+2.15.6	请求示例	36
+2.15.7	返回示例	36
+2.16	获取奖品详情	36
+2.16.1	接口功能	36
+2.16.2	请求方式	36
+2.16.3	接口原型	36
+2.16.4	参数说明	36
+2.16.5	返回参数	37
+2.16.6	请求示例	37
+2.16.7	返回示例	37
+2.17	获取奖品列表	37
+2.17.1	接口功能	37
+2.17.2	请求方式	37
+2.17.3	接口原型	37
+2.17.4	参数说明	38
+2.17.5	返回参数	38
+2.17.6	请求示例	39
+2.17.7	返回示例	39
+2.18	获取中奖列表	39
+2.18.1	接口功能	39
+2.18.2	请求方式	39
+2.18.3	接口原型	39
+2.18.4	参数说明	39
+2.18.5	返回参数	39
+2.18.6	请求示例	40
+2.18.7	返回示例	40
+2.19	获取抽奖机会	41
+2.19.1	接口功能	41
+2.19.2	请求方式	41
+2.19.3	接口原型	41
+2.19.4	参数说明	41
+2.19.5	返回参数	41
+2.19.6	请求示例	42
+2.19.7	返回示例	42
+2.20	抽奖	42
+2.20.1	接口功能	42
+2.20.2	请求方式	42
+2.20.3	接口原型	42
+2.20.4	参数说明	42
+2.20.5	返回参数	43
+2.20.6	请求示例	43
+2.20.7	返回示例	43
+2.21	用户注册更新	44
+2.21.1	接口功能	44
+2.21.2	请求方式	44
+2.21.3	接口原型	44
+2.21.4	参数说明	44
+2.21.5	返回参数	44
+2.21.6	请求示例	44
+2.21.7	返回示例	45
+2.22	获取订购列表	45
+2.22.1	接口功能	45
+2.22.2	请求方式	45
+2.22.3	接口原型	45
+2.22.4	参数说明	45
+2.22.5	返回参数	45
+2.22.6	请求示例	46
+2.22.7	返回示例	46
+2.23	获取道具详情	47
+2.23.1	接口功能	47
+2.23.2	请求方式	47
+2.23.3	接口原型	47
+2.23.4	参数说明	47
+2.23.5	返回参数	47
+2.23.6	请求示例	48
+2.23.7	返回示例	48
+2.24	获取道具列表	48
+2.24.1	接口功能	48
+2.24.2	请求方式	48
+2.24.3	接口原型	48
+2.24.4	参数说明	48
+2.24.5	返回参数	49
+2.24.6	请求示例	49
+2.24.7	返回示例	49
+2.25	订购道具	50
+2.25.1	接口功能	50
+2.25.2	请求方式	50
+2.25.3	接口原型	50
+2.25.4	参数说明	50
+2.25.5	返回参数	50
+2.25.6	请求示例	50
+2.25.7	返回示例	50
+2.26	获取钱包详情	51
+2.26.1	接口功能	51
+2.26.2	请求方式	51
+2.26.3	接口原型	51
+2.26.4	参数说明	51
+2.26.5	返回参数	51
+2.26.6	请求示例	51
+2.26.7	返回示例	52
+2.27	获取充值列表	52
+2.27.1	接口功能	52
+2.27.2	请求方式	52
+2.27.3	接口原型	52
+2.27.4	参数说明	52
+2.27.5	返回参数	52
+2.27.6	请求示例	53
+2.27.7	返回示例	53
+2.28	获取消费列表	53
+2.28.1	接口功能	53
+2.28.2	请求方式	54
+2.28.3	接口原型	54
+2.28.4	参数说明	54
+2.28.5	返回参数	54
+2.28.6	请求示例	55
+2.28.7	返回示例	55
+3.	附录	55
+3.1	通用码	55
+3.2	道具订购返回码	56
+
+
+
+1.	目的范围
+ 本文档描述为游戏运营平台API接口
+
+2.	接口详情
+2.1	获取栏目详情
+2.1.1	接口功能
+根据栏目代码获取栏目详情
+2.1.2	请求方式
+HTTP GET
+2.1.3	接口原型
+http://ip:port/api/services/operationService/categoryDetail
+2.1.4	参数说明
+字段名	变量名	是否必填	类型	描述
+栏目代码	categoryCode	是	String	
+
+2.1.5	返回参数
+字段名	变量名	是否必填	类型	描述
+结果代码	resultCode	是	int	参照附录3.1
+
+结果描述	resultMsg	是	String	
+栏目代码	categoryCode	否	String	
+栏目名称	categoryName	否	String	
+搜索的关键字	searchKey	否	String	
+父栏目代码	parentCategoryCode	否	int	
+栏目描述	pofile	否	String	
+排列序号	sequence	否	String	
+图1	picture1URL	否	String	
+图2	picture2URL	否	String	
+图3	picture3URL	否	String	
+图4	picture4URL	否	String	
+跳转URL	targetURL	否	String	
+点击量	totalClick	否	int	
+
+2.1.6	请求示例
+
+2.1.7	返回示例
+
+2.2	获取栏目列表
+2.2.1	接口功能
+根据父栏目代码获取子栏目列表
+2.2.2	请求方式
+HTTP GET
+2.2.3	接口原型
+http://ip:port/api/services/operationService/categoryList
+2.2.4	参数说明
+字段名	变量名	是否必填	类型	描述
+栏目代码	categoryCode	是	String	
+当前页	curpage	是	int	默认：1
+每页大小	pagesize	是	int	
+
+2.2.5	返回参数
+字段名	变量名	是否必填	类型	描述
+结果代码	resultCode	是	int	参照附录3.1
+
+结果描述	resultMsg	是	String	
+每页大小	pagesize	否	int	
+总记录数	totalcount	否	int	
+总页数	totalpage	否	int	
+当前页	curpage	否	int	
+栏目列表	categoryList	否	List<Category>	
+List<Category>结构：
+
+字段名	变量名	是否必填	类型	描述
+栏目代码	categoryCode	否	String	
+栏目名称	categoryName	否	String	
+搜索的关键字	searchKey	否	String	
+父栏目代码	parentCategoryCode	否	int	
+栏目描述	pofile	否	String	
+排列序号	sequence	否	String	
+图1	picture1URL	否	String	
+图2	picture2URL	否	String	
+图3	picture3URL	否	String	
+图4	picture4URL	否	String	
+跳转URL	targetURL	否	String	
+点击量	totalClick	否	int	
+
+2.2.6	请求示例
+
+2.2.7	返回示例
+
+2.3	获取产品详情
+2.3.1	接口功能
+根据产品代码获取产品详情
+2.3.2	请求方式
+HTTP GET
+2.3.3	接口原型
+http://ip:port/api/services/operationService/productDetail
+2.3.4	参数说明
+字段名	变量名	是否必填	类型	描述
+产品代码	productCode	是	String	
+
+2.3.5	返回参数
+字段名	变量名	是否必填	类型	描述
+结果代码	resultCode	是	int	参照附录3.1
+
+结果描述	resultMsg	是	String	
+产品代码	productCode	否	String	
+内容名称	productName	否	String	
+价格	price	否	int	产品价格，以分为单位
+类型	type	否	int	1：包月
+2：道具 
+3：视频
+4：主播
+简介	profile	否	String	
+搜索的关键字	searchKey	否	String	
+排列序号	sequence	否	int	
+图1	picture1URL	否	String	
+图2	picture2URL	否	String	
+图3	picture3URL	否	String	
+图4	picture4URL	否	String	
+图5	picture5URL	否	String	
+图6	picture6URL	否	String	
+图7	picture7URL	否	String	
+图8	picture8URL	否	String	
+图9	picture9URL	否	String	
+图10	picture10URL	否	String	
+JarURL	jarURL	否	String	
+JadURL	jadURL	否	String	
+hot标识 	hotFlag	否	int	1-开启；0-关闭
+new标识	newFlag	否	int	1-开启；0-关闭
+提供商代码	cpCode	否	String	
+启动URL	startURL	否	String	
+
+2.3.6	请求示例
+
+2.3.7	返回示例
+
+2.4	获取内容详情
+2.4.1	接口功能
+根据内容代码获取内容详情
+2.4.2	请求方式
+HTTP GET
+2.4.3	接口原型
+http://ip:port/api/services/operationService/contentDetail
+2.4.4	参数说明
+字段名	变量名	是否必填	类型	描述
+内容代码	contentCode	是	String	
+
+2.4.5	返回参数
+字段名	变量名	是否必填	类型	描述
+结果代码	resultCode	是	int	参照附录3.1
+
+结果描述	resultMsg	是	String	
+内容代码	contentCode	否	String	
+内容名称	contentName	否	String	
+类型	type	否	int	1：游戏
+2：道具 
+3：视频
+
+播放代码	playCode	否	String	
+简介	profile	否	String	
+搜索的关键字	searchKey	否	String	
+排列序号	sequence	否	int	
+图1	picture1URL	否	String	
+图2	picture2URL	否	String	
+图3	picture3URL	否	String	
+图4	picture4URL	否	String	
+图5	picture5URL	否	String	
+图6	picture6URL	否	String	
+图7	picture7URL	否	String	
+图8	picture8URL	否	String	
+图9	picture9URL	否	String	
+图10	picture10URL	否	String	
+JarURL	jarURL	否	String	
+JadURL	jadURL	否	String	
+hot标识 	hotFlag	否	int	1-开启；0-关闭
+new标识	newFlag	否	int	1-开启；0-关闭
+提供商代码	cpCode	否	String	
+启动URL	startURL	否	String	
+资费列表	tariffList	否	List<Tariff>	
+List<Tariff>结构：
+字段名	变量名	是否必填	类型	描述
+产品代码	productCode	否	String	
+价格	price	否	int	产品价格，以分为单位
+
+
+2.4.6	请求示例
+
+2.4.7	返回示例
+
+2.5	获取内容列表
+2.5.1	接口功能
+根据栏目代码获取内容列表
+2.5.2	请求方式
+HTTP GET
+2.5.3	接口原型
+http://ip:port/api/services/operationService/contentList
+2.5.4	参数说明
+字段名	变量名	是否必填	类型	描述
+栏目代码	categoryCode	是	String	
+当前页	curpage	是	int	默认：1
+每页大小	pagesize	是	int	
+
+2.5.5	返回参数
+字段名	变量名	是否必填	类型	描述
+结果代码	resultCode	是	int	参照附录3.1
+
+结果描述	resultMsg	是	String	
+每页大小	pagesize	否	int	
+总记录数	totalcount	否	int	
+总页数	totalpage	否	int	
+当前页	curpage	否	int	
+内容列表	contentList	否	List<Content>	
+List<Content>结构：
+
+字段名	变量名	是否必填	类型	描述
+内容代码	contentCode	否	String	
+内容名称	contentName	否	String	
+大类型	contentType	否	int	1：内容
+2：产品
+子类型	subType	否	int	contentType=1
+1：游戏
+2：道具 
+3：视频
+contentType=2
+1：包月2：道具 3：视频4：主播
+播放代码	playCode	否	String	
+栏目代码	categoryCode	否	String	
+简介	profile	否	String	
+搜索的关键字	searchKey	否	String	
+排列序号	sequence	否	int	
+图1	picture1URL	否	String	
+图2	picture2URL	否	String	
+图3	picture3URL	否	String	
+图4	picture4URL	否	String	
+图5	picture5URL	否	String	
+图6	picture6URL	否	String	
+图7	picture7URL	否	String	
+图8	picture8URL	否	String	
+图9	picture9URL	否	String	
+图10	picture10URL	否	String	
+JarURL	jarURL	否	String	
+JadURL	jadURL	否	String	
+hot标识 	hotFlag	否	String	1-开启；0-关闭
+new标识	newFlag	否	String	1-开启；0-关闭
+提供商代码	cpCode	否	String	
+启动URL	startURL	否	String	
+跳转URL	targetURL	否	String	
+
+2.5.6	请求示例
+
+2.5.7	返回示例
+
+2.6	获取内容列表
+2.6.1	接口功能
+根据产品代码获取内容列表
+2.6.2	请求方式
+HTTP GET
+2.6.3	接口原型
+http://ip:port/api/services/operationService/contentListByPcode
+2.6.4	参数说明
+字段名	变量名	是否必填	类型	描述
+产品代码	productCode	是	String	
+当前页	curpage	是	int	默认：1
+每页大小	pagesize	是	int	
+
+2.6.5	返回参数
+字段名	变量名	是否必填	类型	描述
+结果代码	resultCode	是	int	参照附录3.1
+
+结果描述	resultMsg	是	String	
+每页大小	pagesize	否	int	
+总记录数	totalcount	否	int	
+总页数	totalpage	否	int	
+当前页	curpage	否	int	
+内容列表	contentList	否	List<Content>	
+List<Content>结构：
+
+字段名	变量名	是否必填	类型	描述
+内容代码	contentCode	否	String	
+内容名称	contentName	否	String	
+大类型	contentType	否	int	1：内容
+2：产品
+子类型	subType	否	int	contentType=1
+1：游戏
+2：道具 
+3：视频
+contentType=2
+1：包月2：道具 3：视频4：主播
+播放代码	playCode	否	String	
+栏目代码	categoryCode	否	String	
+简介	profile	否	String	
+搜索的关键字	searchKey	否	String	
+排列序号	sequence	否	int	
+图1	picture1URL	否	String	
+图2	picture2URL	否	String	
+图3	picture3URL	否	String	
+图4	picture4URL	否	String	
+图5	picture5URL	否	String	
+图6	picture6URL	否	String	
+图7	picture7URL	否	String	
+图8	picture8URL	否	String	
+图9	picture9URL	否	String	
+图10	picture10URL	否	String	
+JarURL	jarURL	否	String	
+JadURL	jadURL	否	String	
+hot标识 	hotFlag	否	String	1-开启；0-关闭
+new标识	newFlag	否	String	1-开启；0-关闭
+提供商代码	cpCode	否	String	
+启动URL	startURL	否	String	
+跳转URL	targetURL	否	String	
+
+2.6.6	请求示例
+
+2.6.7	返回示例
+
+
+
+2.7	按关键字查找内容
+2.7.1	接口功能
+根据关键字与类型查找内容列表
+2.7.2	请求方式
+HTTP GET
+2.7.3	接口原型
+http://ip:port/api/services/operationService/searchList
+2.7.4	参数说明
+字段名	变量名	是否必填	类型	描述
+关键字	searchKey	是	String	
+类型	searchType	是	int	0：全部
+1：游戏
+2：道具
+3：视频
+当前页	curpage	是	int	默认：1
+每页大小	pagesize	是	int	
+
+2.7.5	返回参数
+字段名	变量名	是否必填	类型	描述
+结果代码	resultCode	是	int	参照附录3.1
+
+结果描述	resultMsg	是	String	
+每页大小	pagesize	否	int	
+总记录数	totalcount	否	int	
+总页数	totalpage	否	int	
+当前页	curpage	否	int	
+内容列表	contentList	否	List<Content>	
+List<Content>结构：
+
+字段名	变量名	是否必填	类型	描述
+内容代码	contentCode	否	String	
+内容名称	contentName	否	String	
+大类型	contentType	否	int	1：内容
+2：产品
+子类型	subType	否	int	contentType=1
+1：游戏
+2：道具 
+3：视频
+contentType=2
+1：包月2：道具 3：视频4：主播
+播放代码	playCode	否	String	
+栏目代码	categoryCode	否	String	
+简介	profile	否	String	
+搜索的关键字	searchKey	否	String	
+排列序号	sequence	否	int	
+图1	picture1URL	否	String	
+图2	picture2URL	否	String	
+图3	picture3URL	否	String	
+图4	picture4URL	否	String	
+图5	picture5URL	否	String	
+图6	picture6URL	否	String	
+图7	picture7URL	否	String	
+图8	picture8URL	否	String	
+图9	picture9URL	否	String	
+图10	picture10URL	否	String	
+JarURL	jarURL	否	String	
+JadURL	jadURL	否	String	
+hot标识 	hotFlag	否	String	1-开启；0-关闭
+new标识	newFlag	否	String	1-开启；0-关闭
+提供商代码	cpCode	否	String	
+启动URL	startURL	否	String	
+
+
+2.7.6	请求示例
+
+2.7.7	返回示例
+
+2.8	鉴权
+2.8.1	接口功能
+鉴权
+2.8.2	请求方式
+HTTP GET
+2.8.3	接口原型
+http://ip:port/api/services/businessService/serviceAuth
+2.8.4	参数说明
+字段名	变量名	是否必填	类型	描述
+用户帐号	userID	是	String	
+身份证明	userToken	是	String	
+用户帐号类型	userIDType	否	int	0：普通用户
+1：测试用户
+产品代码	productID	是	String	不同于IPTV 产品编号，需要游戏平台分配
+平台标识	platform	是	String	HUAWEI：华为
+ZTE2X：中兴
+
+2.8.5	返回参数
+字段名	变量名	是否必填	类型	描述
+事务编号	transactionID	是	String	
+结果描述	result	是	String	0:成功其他：失败
+用户帐号	userID	是	String	
+帐号类型	userIDType	是	int	0：普通用户
+1：测试用户
+IPTV 产品编号	productID	是	String	
+IPTV 产品名称	productName	是	String	
+本订购关系的鉴权失效时间	expiredTime	否	String	YYYYMMDDHHMISS
+购买类型	purchaseType	否	int	0：包月
+1：按次
+计费信息描述	changingPolicyDesc	是	String	
+是否自动续定
+	subscriptionExtend	否	int	0：是
+1：否
+
+2.8.6	请求示例
+
+2.8.7	返回示例
+
+2.9	订购
+2.9.1	接口功能
+订购
+2.9.2	请求方式
+HTTP GET
+2.9.3	接口原型
+http://ip:port/api/services/businessService/serviceOrder
+2.9.4	参数说明
+字段名	变量名	是否必填	类型	描述
+跳转返回地址	returnUrl	是	String	订购支付完成跳转url
+用户帐号	userID	是	String	
+身份证明	userToken	否	String	
+产品代码	productID	是	String	不同于IPTV 产品编号，需要游戏平台分配
+内容代码	contentID	否	String	不同于IPTV 内容编号，需要游戏平台分配
+购买类型	purchaseType	是	int	0：包月（默认）
+1：按次
+平台标识	platform	是	String	HUAWEI：华为
+ZTE2X：中兴
+
+2.9.5	返回参数
+字段名	变量名	是否必填	类型	描述
+事务编号	transactionID	是	String	
+结果	result	是	String	0:成功其他：失败
+结果描述	description	否	String	
+订单代码	orderCode	是	String	游戏平台订单代码用于确认订购
+购买类型	purchaseType	否	int	0：包月 1：按次
+失效时间	expiredTime	否	String	YYYYMMDDHHMISS
+是否自动续定	subscriptionExtend	否	int	0：是
+1：否
+IPTV业务管理平台订单编号，BMS管理平台订购主键	subscriptionID	否	String	
+MD5签名摘要	abstract	是	String	
+
+2.9.6	请求示例
+
+2.9.7	返回示例
+
+2.10	订购确认
+2.10.1	接口功能
+订购确认
+2.10.2	请求方式
+HTTP GET
+2.10.3	接口原型
+http://ip:port/api/services/businessService/confirmOrder
+2.10.4	参数说明
+字段名	变量名	是否必填	类型	描述
+订单代码	orderCode	是	String	游戏平台订单代码用于确认订购
+事务编号	transactionID	否	String	
+结果	result	是	String	0：成功 其他：失败
+结果描述	description	否	String	
+订购方式	purchaseType	否	int	0：包月 1：按次 2：包时段  3：固定有效期 99：其他
+订购关系的失效时间 	expiredTime	否	String	格式为YYYYMMDDHHMISS。缺少该参数表示由增值业务自行管理
+是否自动续定
+	subscriptionExtend	否	int	（该字段只对purchaseType=0：包月订购有意义）
+0：是 
+1：否
+IPTV业务管理平台订单编号，BMS管理平台订购主键	subscriptionID	否	String	
+MD5签名摘要	vasAbstract	是	String	
+
+2.10.5	返回参数
+字段名	变量名	是否必填	类型	描述
+结果代码	resultCode	是	int	参照附录3.1
+
+结果描述	resultMsg	是	String	
+
+2.10.6	请求示例
+
+2.10.7	返回示例
+
+2.11	UserToken更新
+2.11.1	接口功能
+UserToken失效时，请求更新UserToken
+2.11.2	请求方式
+HTTP GET
+2.11.3	接口原型
+http://ip:port/api/services/businessService/refreshUserToken
+2.11.4	参数说明
+字段名	变量名	是否必填	类型	描述
+返回URL	returnUrl	是	String	更新UserToken后返回的URL
+过期UserToken	oldUserToken	是	String	
+用户帐号	userID	是	String	
+平台标识	platform	是	String	HUAWEI：华为
+ZTE2X：中兴
+
+2.11.5	返回参数
+字段名	变量名	是否必填	类型	描述
+新的UserToken	NewUserToken	是	String	参照附录3.1
+
+结果 	Result	是	String	0：成功其他：失败
+UserToken的失效时间 	TokenExpiredTime	否	String	格式为YYYYMMDDHH24MiSS
+SP唯一标示	SPID	否	String	
+IPTV用户业务编号	UserID	是	String	
+事务编号	TransactionID	否	String	
+
+2.11.6	请求示例
+
+2.11.7	返回示例
+
+
+2.12	订单信息
+2.12.1	接口功能
+获取用户已订购的产品列表
+2.12.2	请求方式
+HTTP GET
+2.12.3	接口原型
+http://ip:port/api/services/businessService/orderInfo
+2.12.4	参数说明
+字段名	变量名	是否必填	类型	描述
+用户帐号	userID	是	String	
+身份证明	userToken	是	String	
+用户帐号类型	userIDType	是	int	0：普通用户
+1：测试用户
+平台标识	platform	是	String	HUAWEI：华为
+ZTE2X：中兴
+
+2.12.5	返回参数
+字段名	变量名	是否必填	类型	描述
+结果	result	是	String	0：成功其他：失败
+结果描述	description	是	String	
+事务编号	transactionID	否	String	
+IPTV用户业务编号	userID	否	String	
+用户帐号类型	userIDType	否	int	0：普通用户
+1：测试用户
+订购产品列表	productList	否	List<Product>	
+
+List<Product>结构：
+字段名	变量名	是否必填	类型	描述
+增值产品代码	productID	否	String	
+增值产品名称	productName	否	String	
+产品类型	productFlag	否	int	
+sp编码	SPID	否	String	
+购买类型	purchaseType	否	int	
+失效时间	expiredTime	否	String	YYYYMMDDHHMISS
+计费信息描述	changingPolicyDesc	否	String	
+是否自动续定	subscriptionExtend	否	int	0：是
+1：否
+
+
+2.12.6	请求示例
+
+2.12.7	返回示例
+
+
+2.13	探针上报
+2.13.1	接口功能
+推荐位，栏目，内容访问上报
+2.13.2	请求方式
+HTTP POST
+2.13.3	接口原型
+http://ip:port/api/services/logService/logReport
+2.13.4	参数说明
+字段名	变量名	必填	类型	描述
+对象代码	code	是	String	可以是推荐位代码，栏目代码，内容代码
+对象名称	name	是	String	可以是推荐位名称，栏目名称，内容名称
+对象类型	type	是	int	[1：推荐位,2：栏目,3：内容]
+内容类型	subType	否	int	[1：游戏,2：道具,3：视频]
+推荐位置	position	否	String	如：1,2,...
+产品代码	productCode	否	String	游戏平台分配的产品代码
+产品名称	productName	否	String	游戏平台分配的产品名称
+用户账号	userID	是	String	
+
+2.13.5	返回参数
+字段名	变量名	类型	描述
+结果代码	resultCode	int	参照附录3.1
+
+结果描述	resultDesc	string	
+
+2.13.6	请求示例
+推荐位日志上报
+{
+  "code":"test",
+  "name":"测试",
+  "userID":"test@ITV.com",
+  "type":1
+}
+栏目日志上报
+{
+  "code":"test",
+  "name":"测试",
+  "userID":"test@ITV.com",
+  "type":2
+}
+内容日志上报
+{
+  "code":"test",
+  "name":"测试",
+  "type":3,
+  "subType":1,
+  "userID":"test@ITV.com",
+  "productCode":"testcode",
+  "productName":"testname",
+}
+2.13.7	返回示例
+{
+    "resultCode": 0,
+    "resultDesc": "successfull"
+ }
+
+2.14	获取活动详情
+2.14.1	接口功能
+根据活动代码获取活动详情
+2.14.2	请求方式
+HTTP GET
+2.14.3	接口原型
+http://ip:port/api/services/activityService/activityDetail
+2.14.4	参数说明
+字段名	变量名	是否必填	类型	描述
+活动代码	activityCode	是	String	
+
+2.14.5	返回参数
+字段名	变量名	是否必填	类型	描述
+结果代码	resultCode	是	int	参照附录3.1
+
+结果描述	resultMsg	是	String	
+活动代码	activityCode	否	String	
+活动名称	activityName	否	String	
+中奖次数	winTimes	否	int	中奖次数：0-不限制；
+开始时间	startTime	否	String	YYYYMMDDHHMISS
+结束时间	endTime	否	String	YYYYMMDDHHMISS
+活动描述	pofile	否	String	
+排列序号	sequence	否	String	
+图1	picture1URL	否	String	
+图2	picture2URL	否	String	
+图3	picture3URL	否	String	
+图4	picture4URL	否	String	
+跳转URL	targetURL	否	String	
+
+2.14.6	请求示例
+
+2.14.7	返回示例
+
+2.15	获取活动列表
+2.15.1	接口功能
+获取活动列表
+2.15.2	请求方式
+HTTP GET
+2.15.3	接口原型
+http://ip:port/api/services/activityService/activityList
+2.15.4	参数说明
+字段名	变量名	是否必填	类型	描述
+当前页	curpage	是	int	默认：1
+每页大小	pagesize	是	int	
+
+2.15.5	返回参数
+字段名	变量名	是否必填	类型	描述
+结果代码	resultCode	是	int	参照附录3.1
+
+结果描述	resultMsg	是	String	
+每页大小	pagesize	否	int	
+总记录数	totalcount	否	int	
+总页数	totalpage	否	int	
+当前页	curpage	否	int	
+栏目列表	activityList	否	List<Activity>	
+List<Activity>结构：
+
+字段名	变量名	是否必填	类型	描述
+活动代码	activityCode	否	String	
+活动名称	activityName	否	String	
+中奖次数	winTimes	否	int	中奖次数：0-不限制；
+开始时间	startTime	否	String	YYYYMMDDHHMISS
+结束时间	endTime	否	String	YYYYMMDDHHMISS
+活动描述	pofile	否	String	
+排列序号	sequence	否	String	
+图1	picture1URL	否	String	
+图2	picture2URL	否	String	
+图3	picture3URL	否	String	
+图4	picture4URL	否	String	
+跳转URL	targetURL	否	String	
+
+2.15.6	请求示例
+
+2.15.7	返回示例
+
+2.16	获取奖品详情
+2.16.1	接口功能
+根据奖品代码获取活动详情
+2.16.2	请求方式
+HTTP GET
+2.16.3	接口原型
+http://ip:port/api/services/activityService/prizeDetail
+2.16.4	参数说明
+字段名	变量名	是否必填	类型	描述
+奖品代码	prizeCode	是	String	
+
+2.16.5	返回参数
+字段名	变量名	是否必填	类型	描述
+结果代码	resultCode	是	int	参照附录3.1
+
+结果描述	resultMsg	是	String	
+奖品代码	prizeCode	否	String	
+奖品名称	prizeName	否	String	
+描述	profile	否	String	
+排列序号	sequence	否	int	
+图1	picture1URL	否	String	
+
+2.16.6	请求示例
+
+2.16.7	返回示例
+
+2.17	获取奖品列表
+2.17.1	接口功能
+根据活动代码获取奖品列表
+2.17.2	请求方式
+HTTP GET
+2.17.3	接口原型
+http://ip:port/api/services/activityService/prizeList
+2.17.4	参数说明
+字段名	变量名	是否必填	类型	描述
+活动代码	activityCode	是	String	
+
+2.17.5	返回参数
+字段名	变量名	是否必填	类型	描述
+结果代码	resultCode	是	int	参照附录3.1
+
+结果描述	resultMsg	是	String	
+奖级列表	levelList	否	List<Level>	
+List<Level>结构：
+
+字段名	变量名	是否必填	类型	描述
+奖级代码	levelCode	否	String	
+奖级名称	levelName	否	String	
+奖品价值	price	否	float	
+等级	level	否	int	1,2,3,...
+已中奖人数	winnerCount	否	String	
+剩余数量	remainNum	否	int	
+排列序号	sequence	否	int	
+奖品列表	prizeList	否	List<Prize>	
+List<Prize>结构：
+字段名	变量名	是否必填	类型	描述
+奖品代码	prizeCode	否	String	
+奖品名称	prizeName	否	String	
+描述	profile	否	String	
+排列序号	sequence	否	int	
+图1	picture1URL	否	String	
+
+2.17.6	请求示例
+
+2.17.7	返回示例
+
+2.18	获取中奖列表
+2.18.1	接口功能
+根据活动代码获取中奖列表
+2.18.2	请求方式
+HTTP GET
+2.18.3	接口原型
+http://ip:port/api/services/activityService/winnerList
+
+新接口：drawChanceForDontWin
+2.18.4	参数说明
+字段名	变量名	是否必填	类型	描述
+活动代码	activityCode	是	String	
+当前页	curpage	是	int	默认：1
+每页大小	pagesize	是	int	
+
+2.18.5	返回参数
+字段名	变量名	是否必填	类型	描述
+结果代码	resultCode	是	int	参照附录3.1
+
+结果描述	resultMsg	是	String	
+每页大小	pagesize	否	int	
+总记录数	totalcount	否	int	
+总页数	totalpage	否	int	
+当前页	curpage	否	int	
+中奖列表	winnerList	否	List<Winner>	
+List<Winner>结构：
+字段名	变量名	是否必填	类型	描述
+用户账号	userID	否	String	
+奖级代码	levelCode	否	String	
+奖级名称	levelName	否	String	
+等级	level	否	int	1,2,3,...
+中奖时间	winTime	否	String	YYYYMMDDHHMISS
+手机号	phone	否	String	
+奖品列表	prizeList	否	List<Prize>	
+List<Prize>结构：
+字段名	变量名	是否必填	类型	描述
+奖品代码	prizeCode	否	String	
+奖品名称	prizeName	否	String	
+描述	profile	否	String	
+排列序号	sequence	否	int	
+图1	picture1URL	否	String	
+奖品代码	prizeCode	否	String	
+
+2.18.6	请求示例
+
+2.18.7	返回示例
+
+2.19	获取抽奖机会
+2.19.1	接口功能
+获取用户抽奖机会
+2.19.2	请求方式
+HTTP GET
+2.19.3	接口原型
+http://ip:port/api/services/activityService/drawChance
+2.19.4	参数说明
+字段名	变量名	是否必填	类型	描述
+活动代码	activityCode	是	String	
+用户帐号	userID	是	String	
+身份证明	userToken	否	String	
+用户帐号类型	userIDType	否	int	0：普通用户
+1：测试用户
+平台标识	platform	否	String	HUAWEI：华为
+ZTE2X：中兴
+
+2.19.5	返回参数
+字段名	变量名	是否必填	类型	描述
+结果代码	resultCode	是	int	参照附录3.1
+
+结果描述	resultMsg	是	String	
+抽奖次数	dayChance	否	String	
+剩余抽奖次数	remainDayChance	否	String	
+已抽奖次数	historyDayChance	否	float	
+结果，获取增值用户订购产品列表时返回的结果 	result	否	String	0：成功；其他：失败（9202[UserToken过期],9204[UserToken非法]）
+
+2.19.6	请求示例
+
+2.19.7	返回示例
+
+2.20	抽奖
+2.20.1	接口功能
+用户抽奖
+2.20.2	请求方式
+HTTP GET
+2.20.3	接口原型
+http://ip:port/api/services/activityService/draw
+2.20.4	参数说明
+字段名	变量名	是否必填	类型	描述
+活动代码	activityCode	是	String	
+用户帐号	userID	是	String	
+
+2.20.5	返回参数
+字段名	变量名	是否必填	类型	描述
+结果代码	resultCode	是	int	参照附录3.1
+
+结果描述	resultMsg	是	String	
+用户帐号	userID	否	String	
+手机号	phone	否	String	
+奖级名称	leveName	否	String	
+奖级代码	levelCode	否	String	
+等级	level	否	int	1,2,3,...
+奖品列表	prizeList	否	List<Prize>	
+List<Prize>结构：
+字段名	变量名	是否必填	类型	描述
+奖品代码	prizeCode	否	String	
+奖品名称	prizeName	否	String	
+描述	profile	否	String	
+排列序号	sequence	否	int	
+图1	picture1URL	否	String	
+奖品代码	prizeCode	否	String	
+
+
+2.20.6	请求示例
+
+2.20.7	返回示例
+
+2.21	用户注册更新
+2.21.1	接口功能
+用户注册更新
+2.21.2	请求方式
+HTTP GET
+2.21.3	接口原型
+http://ip:port/api/services/userService/saveOrUpdate
+2.21.4	参数说明
+字段名	变量名	是否必填	类型	描述
+用户帐号	userID	是	String	
+手机号	phone	否	String	
+
+2.21.5	返回参数
+字段名	变量名	是否必填	类型	描述
+结果代码	resultCode	是	int	参照附录3.1
+
+结果描述	resultMsg	是	String	
+
+2.21.6	请求示例
+
+2.21.7	返回示例
+
+2.22	获取订购列表
+2.22.1	接口功能
+获取游戏平台订购列表
+2.22.2	请求方式
+HTTP GET
+2.22.3	接口原型
+http://ip:port/api/services/businessService/orderList
+2.22.4	参数说明
+字段名	变量名	是否必填	类型	描述
+产品ID	productID	否	String	不同于IPTV 产品编号，需要游戏平台分配
+用户账号	userID	否	String	
+开始时间	startTime	否	String	YYYYMMDDHHMISS
+结束时间	endTime	否	String	YYYYMMDDHHMISS
+当前页	curpage	是	int	默认：1
+每页大小	pagesize	是	int	
+
+2.22.5	返回参数
+字段名	变量名	是否必填	类型	描述
+结果代码	resultCode	是	int	参照附录3.1
+
+结果描述	resultMsg	是	String	
+每页大小	pagesize	否	int	
+总记录数	totalcount	否	int	
+总页数	totalpage	否	int	
+当前页	curpage	否	int	
+订购列表	orderList	否	List<Order>	
+List<Order>结构：
+字段名	变量名	是否必填	类型	描述
+订单代码	orderCode	否	String	
+用户账号	userCode	否	String	
+产品代码	productCode	否	String	
+产品名称	productName	否	String	
+下单时间	orderTime	否	String	YYYYMMDDHHMISS
+确认订购	confirmTime	否	String	YYYYMMDDHHMISS
+过期时间	expiredTime	否	String	YYYYMMDDHHMISS
+价格	price	否	int	
+类型	type	否	int	0:包月
+1:按次
+增值产品ID	vasProductID	否	String	
+增值服务ID	vasServiceID	否	String	
+增值内容ID	vasContentID	否	String	
+提供商代码	cpCode	否	String	
+
+2.22.6	请求示例
+
+2.22.7	返回示例
+
+2.23	获取道具详情
+2.23.1	接口功能
+根据道具代码获取道具详情
+2.23.2	请求方式
+HTTP GET
+2.23.3	接口原型
+http://ip:port/api/services/operationService/itemsDetail
+2.23.4	参数说明
+字段名	变量名	是否必填	类型	描述
+道具代码	itemsCode	是	String	
+
+2.23.5	返回参数
+字段名	变量名	是否必填	类型	描述
+结果代码	resultCode	是	int	参照附录3.1
+
+结果描述	resultMsg	是	String	
+道具代码	itemsCode	否	String	
+道具名称	itemsName	否	String	
+栏目描述	pofile	否	String	
+排列序号	sequence	否	int	
+图1	picture1URL	否	String	
+图2	picture2URL	否	String	
+图3	picture3URL	否	String	
+图4	picture4URL	否	String	
+价格	price	否	int	道具消费价格
+豆子	vbean	否	int	道具消费V豆数量
+提供商代码	cpCode	否	String	提供商代码
+
+2.23.6	请求示例
+
+2.23.7	返回示例
+
+2.24	获取道具列表
+2.24.1	接口功能
+根据游戏内容代码获取道具列表
+2.24.2	请求方式
+HTTP GET
+2.24.3	接口原型
+http://ip:port/api/services/operationService/itemsList
+2.24.4	参数说明
+字段名	变量名	是否必填	类型	描述
+游戏内容代码	contentCode	是	String	
+当前页	curpage	是	int	默认：1
+每页大小	pagesize	是	int	
+
+2.24.5	返回参数
+字段名	变量名	是否必填	类型	描述
+结果代码	resultCode	是	int	参照附录3.1
+
+结果描述	resultMsg	是	String	
+每页大小	pagesize	否	int	
+总记录数	totalcount	否	int	
+总页数	totalpage	否	int	
+当前页	curpage	否	int	
+道具列表	itemsList	否	List<Items>	
+List<Items>结构：
+
+字段名	变量名	是否必填	类型	描述
+道具代码	itemsCode	否	String	
+道具名称	itemsName	否	String	
+栏目描述	pofile	否	String	
+排列序号	sequence	否	int	
+图1	picture1URL	否	String	
+图2	picture2URL	否	String	
+图3	picture3URL	否	String	
+图4	picture4URL	否	String	
+价格	price	否	int	道具消费价格
+豆子	vbean	否	int	道具消费V豆数量
+提供商代码	cpCode	否	String	提供商代码
+
+2.24.6	请求示例
+
+2.24.7	返回示例
+
+2.25	订购道具
+2.25.1	接口功能
+订购道具
+2.25.2	请求方式
+HTTP GET
+2.25.3	接口原型
+http://ip:port/api/services/businessService/itemsOrder
+2.25.4	参数说明
+字段名	变量名	是否必填	类型	描述
+用户账号	userID	是	String	
+道具代码	itemsCode	是	String	
+
+2.25.5	返回参数
+字段名	变量名	是否必填	类型	描述
+结果代码	resultCode	是	int	参照附录3.2
+
+结果描述	resultMsg	是	String	
+
+2.25.6	请求示例
+
+2.25.7	返回示例
+
+2.26	获取钱包详情
+2.26.1	接口功能
+获取钱包详情
+2.26.2	请求方式
+HTTP GET
+2.26.3	接口原型
+http://ip:port/api/services/purseService/purseDetail
+2.26.4	参数说明
+字段名	变量名	是否必填	类型	描述
+用户账号	userID	是	String	
+
+2.26.5	返回参数
+字段名	变量名	是否必填	类型	描述
+结果代码	resultCode	是	int	参照附录3.1
+
+结果描述	resultMsg	是	String	
+用户账号	userID	否	int	
+总金额	totalAmount	否	int	
+剩余金额	remainAmount	否	int	
+总V豆	totalVbean	否	int	
+剩余V豆	remainVbean	否	int	
+
+2.26.6	请求示例
+
+2.26.7	返回示例
+
+2.27	获取充值列表
+2.27.1	接口功能
+获取钱包充值列表
+2.27.2	请求方式
+HTTP GET
+2.27.3	接口原型
+http://ip:port/api/services/purseService/purseTopupList
+2.27.4	参数说明
+字段名	变量名	是否必填	类型	描述
+产品ID	productID	否	String	不同于IPTV 产品编号，需要游戏平台分配
+用户账号	userID	否	String	
+开始时间	startTime	否	String	YYYYMMDDHHMISS
+结束时间	endTime	否	String	YYYYMMDDHHMISS
+当前页	curpage	是	int	默认：1
+每页大小	pagesize	是	int	
+
+2.27.5	返回参数
+字段名	变量名	是否必填	类型	描述
+结果代码	resultCode	是	int	参照附录3.1
+
+结果描述	resultMsg	是	String	
+每页大小	pagesize	否	int	
+总记录数	totalcount	否	int	
+总页数	totalpage	否	int	
+当前页	curpage	否	int	
+充值列表	purseTopupList	否	List<PurseTopup>	
+List<PurseTopup>结构：
+
+字段名	变量名	是否必填	类型	描述
+订单代码	orderCode	否	String	
+用户账号	userID	否	String	
+产品代码	productCode	否	String	
+产品名称	productName	否	String	
+充值金额	topupAmount	否	int	
+充值V豆	topupVbean	否	int	
+充值时间	topupTime	否	String	YYYYMMDDHHMISS
+提供商代码	cpCode	否	String	
+
+2.27.6	请求示例
+
+2.27.7	返回示例
+
+2.28	获取消费列表
+2.28.1	接口功能
+获取钱包消费列表
+2.28.2	请求方式
+HTTP GET
+2.28.3	接口原型
+http://ip:port/api/services/purseService/purseConsumeList
+2.28.4	参数说明
+字段名	变量名	是否必填	类型	描述
+提供商代码	cpCode	否	String	
+游戏内容代码	contentCode	否	String	
+道具代码	itemsCode	否	String	
+用户账号	userID	否	String	
+开始时间	startTime	否	String	YYYYMMDDHHMISS
+结束时间	endTime	否	String	YYYYMMDDHHMISS
+当前页	curpage	是	int	默认：1
+每页大小	pagesize	是	int	
+
+2.28.5	返回参数
+字段名	变量名	是否必填	类型	描述
+结果代码	resultCode	是	int	参照附录3.1
+
+结果描述	resultMsg	是	String	
+每页大小	pagesize	否	int	
+总记录数	totalcount	否	int	
+总页数	totalpage	否	int	
+当前页	curpage	否	int	
+消费列表	purseConsumeList	否	List<PurseConsume>	
+List<PurseConsume>结构：
+
+字段名	变量名	是否必填	类型	描述
+用户账号	userID	否	String	
+游戏内容代码	contentCode	否	String	
+游戏内容名称	contentName	否	String	
+道具代码	itemsCode	否	String	
+道具名称	itemsName	否	String	
+消费金额	consumeAmount	否	int	
+消费V豆	consumeVbean	否	int	
+消费时间	consumeTime	否	String	YYYYMMDDHHMISS
+提供商代码	cpCode	否	String	
+
+2.28.6	请求示例
+
+2.28.7	返回示例
+
+
+3.	附录
+3.1	通用码
+状态码	描述
+0	成功
+1	参数非法
+2	账号不存在或已欠费或已停机
+3	网络异常
+4	数据库异常
+5	应用程序异常
+
+3.2	道具订购返回码
+状态码	描述
+6	道具未通过审核
+7	游戏不存在
+8	游戏未通过审核
+9	用户钱包不存在
+10	用户钱包已停用
+11	钱包余额不足
+

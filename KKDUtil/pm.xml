@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+<location>E:/Jars</location>
+<!-- <remote>http://192.168.0.110:8081/nexus/content/groups/public/</remote> -->
+<remote>http://maven.aliyun.com/nexus/content/groups/public/</remote>
+<outPut>/bin</outPut>
+<projectName>通用工具箱</projectName>
+<workingSetName>core</workingSetName>
+<projectFacet>java</projectFacet> 
+<folders>
+	<folder>
+		<name>src</name>
+		<exported>true</exported>
+		<deploypath>/</deploypath>
+		<sourceFolder>true</sourceFolder>
+	</folder>
+</folders>
+<containers>
+	<container>
+		<path>org.eclipse.jdt.launching.JRE_CONTAINER</path>
+		<attributes>
+			<attribute name="owner.project.facets" value="java"/>
+		</attributes>
+		<exported>false</exported>
+	</container>
+	<container>
+		<path>org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v7.0</path>
+		<attributes>
+			<attribute name="owner.project.facets" value="jst.utility"/>
+		</attributes>
+		<exported>false</exported>
+	</container>
+</containers>
+
+<jars>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId> 
+			<version>1.2.4</version>
+			<exported>false</exported>
+			<desc>阿里巴巴处理json</desc>
+		</dependency>
+		<dependency> 
+		  <groupId>xmlpull</groupId>
+		  <artifactId>xmlpull</artifactId>
+		  <version>1.1.3.1</version>
+		  <exported>false</exported>
+		  <desc>xml转对象</desc>
+		</dependency>
+		<dependency>
+		  <groupId>xpp3</groupId>
+		  <artifactId>xpp3_min</artifactId>
+		  <version>1.1.4c</version>
+		  <exported>false</exported>
+		  <desc>xml转对象</desc>
+		</dependency>
+		<dependency>
+		  <groupId>com.thoughtworks.xstream</groupId>
+		  <artifactId>xstream</artifactId>  
+		  <version>1.4.4</version>
+		  <exported>false</exported>
+		  <desc>xml转对象</desc>
+		</dependency>
+		<dependency>
+			<groupId>javax.mail</groupId>  
+			<artifactId>mail</artifactId>
+			<version>1.4.5</version>
+			<exported>false</exported>
+		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.codehaus.jettison</groupId>  -->
+<!-- 			<artifactId>jettison</artifactId> -->
+<!-- 			<version>1.2</version> -->
+<!-- 			<exported>false</exported> -->
+<!-- 		</dependency>  -->
+		<dependency>
+			<groupId>log4j</groupId> 
+			<artifactId>log4j</artifactId> 
+			<version>1.2.17</version>
+			<exported>false</exported>
+			<desc>log4j</desc>
+		</dependency>
+		<dependency>
+		  <groupId>bouncycastle</groupId>
+		  <artifactId>bcprov-jdk14</artifactId>
+		  <version>138</version>
+		  <exported>false</exported>
+		  <desc>rsa提供者包</desc>
+		</dependency>
+<!-- 		<dependency> -->
+<!-- 		  <groupId>org.bouncycastle</groupId> -->
+<!-- 		  <artifactId>bcprov-jdk15on</artifactId> -->
+<!-- 		  <version>1.43</version> -->
+<!-- 		  <exported>false</exported> -->
+<!-- 		  <desc>rsa提供者包</desc> -->
+<!-- 		</dependency> -->
+		
+<!-- 		<dependency> -->
+<!-- 		  <groupId>mysql</groupId>  -->
+<!-- 		  <artifactId>mysql-connector-java</artifactId>  -->
+<!-- 		  <version>5.1.22</version> -->
+<!-- 		  <exported>false</exported> -->
+<!-- 		  <desc>jdbc mysql </desc> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 		  <groupId>c3p0</groupId> -->
+<!-- 		  <artifactId>c3p0</artifactId> -->
+<!-- 		  <version>0.9.1.2</version> -->
+<!-- 		  <exported>false</exported> -->
+<!-- 		</dependency> -->
+			<!-- https://mvnrepository.com/artifact/javassist/javassist -->
+			<dependency>
+			    <groupId>javassist</groupId>
+			    <artifactId>javassist</artifactId>
+			    <version>3.12.0.GA</version>
+			    <exported>false</exported>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/cglib/cglib -->
+			
+			
+			
+</jars>
+<projects>
+</projects>
+
+</project>

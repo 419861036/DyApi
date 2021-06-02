@@ -1,0 +1,47 @@
+1、api 自动生成 。 复杂类型数据处理；//TODO
+2、api 后台验证
+
+
+
+
+IPTV活动
+1、订购页面、http://www.yunmi.ren/html/views/egg/page/order.html
+2、
+
+问题：
+1、订购是否可以增加活动次数（已处理）
+2、js事件怎么玩（已处理）
+3、returnurl returnUrl参数名问题 
+4、电话号码输入（已处理）
+5、接口问题 、鉴权接口有变（已处理）
+6、等待页面（已完成）
+7、判断订购接口不通（内网）
+8、抽不中奖（为解决）
+9、
+
+----图像设计工具
+1、mxgraph（TODO）
+文档:https://www.jianshu.com/p/19cc22aa112c
+demo：http://jgraph.github.io/mxgraph/javascript/examples/grapheditor/www/index.html
+
+
+
+---jar 中得到方法 名称，参数
+
+List<String> classNames = new ArrayList<String>();
+ZipInputStream zip = new ZipInputStream(new FileInputStream("/path/to/jar/file.jar"));
+for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
+    if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
+        // This ZipEntry represents a class. Now, what class does it represent?
+        String className = entry.getName().replace('/', '.'); // including ".class"
+        classNames.add(className.substring(0, className.length() - ".class".length()));
+    }
+}
+
+Guava已经有ClassPath，因为至少14.0，我已经使用和喜欢。 ClassPath的一个好处是它不会加载它找到的类，这在扫描大量类时非常重要。
+
+ClassPath cp=ClassPath.from(Thread.currentThread().getContextClassLoader());
+for(ClassPath.ClassInfo info : cp.getTopLevelClassesRecurusive("my.package.name")) {
+    // Do stuff with classes here...
+}
+
