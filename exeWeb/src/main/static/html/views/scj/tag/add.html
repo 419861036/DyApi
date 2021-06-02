@@ -1,0 +1,113 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>标签新增</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" href="/html/layui/css/layui.css" media="all">
+</head>
+<body>
+
+  <div class="layui-form" lay-filter="layuiadmin-app-form-list" id="layuiadmin-app-form-list" style="padding: 20px 30px 0 0;">
+    <div class="layui-form-item">
+      <label class="layui-form-label">标签名称</label>
+      <div class="layui-input-inline">
+        <input type="text" name="name" id="name" lay-verify="required" placeholder="请输入标签名称" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item layui-hide">
+      <input type="hiden" name="id" id="id" />
+      <input type="button" lay-submit lay-filter="layuiadmin-app-form-submit" id="layuiadmin-app-form-submit" value="确认添加">
+      <input type="button" lay-submit lay-filter="layuiadmin-app-form-edit" id="layuiadmin-app-form-edit" value="确认编辑">
+    </div>
+  </div>
+
+  <script src="/html/layui/layui.js"></script>  
+  <script src="/html/lib/xmselect/xm-select.js"></script>
+  <script>
+  layui.config({
+    base: '/html/' //静态资源所在路径
+  }).extend({
+    index: 'lib/index' //主入口模块
+  }).use(['index', 'form'], function(){
+    var $ = layui.$
+    ,form = layui.form;
+    
+    
+    function getQueryVariable(variable) {
+		var query = window.location.search.substring(1);
+		var vars = query.split("&");
+		for (var i = 0; i < vars.length; i++) {
+			var pair = vars[i].split("=");
+			if (pair[0] == variable) {
+				return pair[1];
+			}
+		}
+		return (false);
+	}
+//     selAppId.
+	var id = getQueryVariable("id");
+	if(id){
+		$.ajax({
+			async : true,
+			"url" : "/api/scj/tag/get?id="+id,
+			"global" : false,
+			"type" : "GET",
+			"contentType": "application/json; charset=utf-8",
+			"dataType" : "json",
+			"timeout" : "60000",
+			"traditional":true,
+			"success" : function(a,b,c){
+				if(a.v){
+					var data=a.v[0]
+					//var tagIds=data.tagIds;
+					//selType.setValue([data.type])
+					$("#id").val(data.id)
+					$("#name").val(data.name)
+				}
+			},
+			"error" : function(err, msg, code) {
+				return false;
+			}
+		});
+	}
+	
+	
+    //监听提交
+    form.on('submit(layuiadmin-app-form-submit)', function(data){
+    	debugger
+      var field = data.field; //获取提交的字段
+      //if(selAppId.getValue()){
+	  	//  field.tagIds=selAppId.getValue();
+      //}
+      var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引  
+			$.ajax({
+		async : true,
+		"url" : "/api/scj/tag/add",
+		"global" : false,
+		"type" : "POST",
+		"contentType": "application/json; charset=utf-8",
+		"dataType" : "json",
+		"timeout" : "60000",
+		"data" : JSON.stringify(field),
+		"traditional":true,
+		"success" : function(a,b,c){
+			parent.layui.table.reload('LAY-app-content-list'); //重载表格
+      		parent.layer.close(index); //再执行关闭 
+		},
+		"error" : function(err, msg, code) {
+			return false;
+		}
+	});
+      //提交 Ajax 成功后，关闭当前弹层并重载表格
+      //$.ajax({});
+      
+    });
+  })
+  </script>
+</body>
+</html>

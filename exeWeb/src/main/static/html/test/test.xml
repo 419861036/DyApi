@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rule name="应用查询" corn="">
+	<seg name="应用查询">
+		<param name="当前页码" var="page" key="page" mock="{\"number|+1\": 202}" />
+		<param name="每页条数" var="pageSize" key="limit" />
+		<param name="应用名称" var="appName" key="appName" />
+     <param name="上下文" var="contextPath" key="contextPath" />
+		
+		<var name="sql" var="sql" init="select * from exe_app where 1=1 "/>
+		<append name="添加appName" key="sql" when="appName" value=" and appName like concat('%',?,'%') " t=" like concat('%',?,'%')"/>
+		<append name="添加contextPath" key="sql" when="contextPath" value=" and contextPath like concat('%',?,'%') " t=" like concat('%',?,'%')"/>
+		<page name="查询数据" var="list" cols="id,appName,contextPath,createTime,upTime" :page="#{page}" :pageSize="#{pageSize}" 
+			:sql="#{sql}" param="appName,contextPath"
+		>
+			
+		</page>
+		
+		<resp name="查询成功" code="200" :msg="查询成功" key="list"/>
+		<go  name="跳转到结束" to="end"/>
+		<resp name="失败" code="100" msg="#{errMsg}" data=""/>
+		<empty name="end"/>
+	</seg>
+	
+</rule>

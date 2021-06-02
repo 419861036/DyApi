@@ -1,0 +1,2 @@
+#java  -Droot=../ -Dlogback.configurationFile=../conf/logback.xml -Djava.ext.dirs=../lib/ com.exe.web.AppServerMain > ../static/logs/std.log 2>&1 &
+java  -Droot=../ -Dlogback.configurationFile=../conf/logback.xml -Djava.ext.dirs=../lib/ com.exe.web.AppServerMain

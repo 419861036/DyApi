@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>菜单新增</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" href="/html/layui/css/layui.css" media="all">
+  <link rel="stylesheet" href="/html/lib/eleTree/css/eleTree.css" media="all">
+</head>
+<body>
+
+  <div class="layui-form" lay-filter="layuiadmin-app-form-list" id="layuiadmin-app-form-list" style="padding: 20px 30px 0 0;">
+    <div id="menu" lay-filter="menu"></div>
+    <div class="layui-form-item layui-hide">
+      <input type="hidden" id="menuId" name="menuId"/>
+      <input type="hidden" id="roleId" name="roleId"/>
+      <input type="button" lay-submit lay-filter="layuiadmin-app-form-submit" id="layuiadmin-app-form-submit" value="确认添加">
+      <input type="button" lay-submit lay-filter="layuiadmin-app-form-edit" id="layuiadmin-app-form-edit" value="确认编辑">
+    </div>
+  </div>
+
+  <script src="/html/layui/layui.js"></script>  
+  <script>
+  layui.config({
+    base: '/html/' //静态资源所在路径
+  }).extend({
+    index: 'lib/index' //主入口模块
+    ,eleTree:'{/}/html/lib/eleTree/eleTree'
+  }).use(['index', 'form','eleTree'], function(){
+    var $ = layui.$
+    ,form = layui.form;
+    var eleTree = layui.eleTree;
+    function listToTree(oldArr){
+      oldArr.forEach(element => {
+        let parentId = element.parentId;
+        if(parentId !== "0"){
+          oldArr.forEach(ele => {
+            if(ele.id == parentId){ //当内层循环的ID== 外层循环的parendId时，（说明有children），需要往该内层id里建个children并push对应的数组；
+              if(!ele.children){
+                ele.children = [];
+              }
+              ele.children.push(element);
+            }
+          });
+        }
+      });
+//       console.log(oldArr) //此时的数组是在原基础上补充了children;
+      oldArr = oldArr.filter(ele => ele.parentId === "0"); //这一步是过滤，按树展开，将多余的数组剔除；
+//       console.log(oldArr)
+      return oldArr;
+    }
+    var roleId = getQueryVariable("id");
+    
+    if(roleId){
+      $("#roleId").val(roleId)
+      $.ajax({
+        async : false,
+        "url" : "/api/menu/role/menus?roleId="+roleId,
+        "global" : false,
+        "type" : "GET",
+        "contentType": "application/json; charset=utf-8",
+        "dataType" : "json",
+        "timeout" : "60000",
+        "traditional":true,
+        "success" : function(a,b,c){
+          if(a.v){
+            roleMenus={};
+            var roleMenuList=a.v;
+            for(var i=0;i<roleMenuList.length;i++){
+                var roleMenu=roleMenuList[i];
+                roleMenus[roleMenu.menuId]=roleMenu;
+            }
+          }else{
+              roleMenus={};
+          }
+        },
+        "error" : function(err, msg, code) {
+          return false;
+        }
+      });
+    }
+     function loadMenuData(path,callback){
+        layui.$.ajax({
+		        		async : true,
+		        		"url" : "/api/menu/page?&page=1&limit=999&name=&paths="+path,
+		        		"global" : false,
+		        		"type" : "POST",
+		        		"contentType": "application/json; charset=utf-8",
+		        		"dataType" : "json",
+		        		"timeout" : "60000",
+		        		"traditional":true,
+		        		"success" : function(a,b,c){
+                            var data=[];
+                            var rootMenu=[];
+                            if(a && a.v&&a.v.collection){
+                                var list=a.v.collection;
+                                for(var i=0;i<list.length;i++){
+                                    var item=list[i];
+                                    var checked=null;
+                                    if(roleMenus){
+                                        var roleMenu=roleMenus[item.id];
+                                        if(roleMenu){
+                                            checked=true;
+                                        }else{
+                                            checked=false;
+                                        }
+                                    }
+                                   
+                                    var menu={
+                                        id:item.id,
+                                        label:item.name,
+                                        href:item.url,
+                                        isLeaf:false,
+                                        checked:checked,
+                                        parentId:item.parentId,
+                                        children:[]
+                                    };
+                                    if(item.paths==path){
+                                        rootMenu=menu;
+                                    }
+                                    data.push(menu);
+                                }
+                            }
+                            data=listToTree(data)
+		        			callback(data)
+		        		},
+		        		"error" : function(err, msg, code) {
+		        			return false;
+		        		}
+		        	});
+    }
+    
+    loadMenuTree();
+    function loadMenuTree(){
+        currentMenu=null;
+        loadMenuData(",0",function(data){
+            menuTree=eleTree.render({
+                    elem: '#menu',
+                    data: data,
+//                     defaultExpandedKeys: ["7"],
+                    emptText: "暂无数据",
+                    highlightCurrent:true,
+                    showCheckbox: true,
+                    expandOnClickNode:false,
+                    renderAfterExpand:false,
+                });
+        });
+        
+    }
+    function getQueryVariable(variable) {
+      var query = window.location.search.substring(1);
+      var vars = query.split("&");
+      for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split("=");
+        if (pair[0] == variable) {
+          return pair[1];
+        }
+      }
+      return (false);
+    }
+    
+    //监听提交
+    form.on('submit(layuiadmin-app-form-submit)', function(data){
+      var selectedMenu=menuTree.getChecked(false,true);
+      var menuIdsStr="";
+      for(var i=0;i<selectedMenu.length;i++){
+          menuIdsStr=menuIdsStr+","+selectedMenu[i].id;
+      }
+      var field = {
+          roleId:roleId,
+          menuIds:menuIdsStr
+      }
+      if(false){
+              debugger
+              return false;
+          } 
+      var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引  
+			$.ajax({
+		async : true,
+		"url" : "/api/menu/bind/role",
+		"global" : false,
+		"type" : "POST",
+		"contentType": "application/json; charset=utf-8",
+		"dataType" : "json",
+		"timeout" : "60000",
+		"data" : JSON.stringify(field),
+		"traditional":true,
+		"success" : function(a,b,c){
+			parent.layui.table.reload('LAY-app-content-list'); //重载表格
+      		parent.layer.close(index); //再执行关闭 
+		},
+		"error" : function(err, msg, code) {
+			return false;
+		}
+	});
+      //提交 Ajax 成功后，关闭当前弹层并重载表格
+      //$.ajax({});
+      
+    });
+    
+  })
+  </script>
+</body>
+</html>

@@ -1,0 +1,365 @@
+
+<!doctype html>
+<html>
+<head>
+    <title>在线HTTP接口测试工具 - Getman</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta name="keywords" content="Getman,Postman,在线post请求,,在线curl,HTTP,Request,Curl,API,GET,POST,PUT,PATCH,DELETE,RESTful,JSON,XML,接口,在线,网页,测试,User-Agent,Cookie,Header,OAuth,Android,安卓,苹果,iOS" />
+    <meta name="description" content="API接口请求模拟测试工具,在线post请求,在线Postman网页版,在线Curl,Restful 支持跨域本地接口,自定义Header JSON接口调试,手机移动端Postman安卓苹果iOS,User-Agent Cookie,HTTP Request,GET POST PUT PATCH DELETE XML Android iOS OAuth" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, ser-scalable=no, shrink-to-fit=no">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="full-screen" content="yes">
+    <meta name="x5-fullscreen" content="true">
+    <meta name="browsermode" content="application">
+    <meta name="x5-page-mode" content="app">
+    <meta name="baidu_union_verify" content="afec853dba94b95b03ea801a5c49babd">
+    <!-- Bootstrap CSS -->
+
+
+    <link href="https://lib.baomitu.com/twitter-bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://lib.baomitu.com/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/img/icon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/img/apple-touch-icon.png" />
+    <link rel="manifest" href="/js/manifest.json">
+    <style>
+        body {
+            /*font-family: "Arial","Microsoft YaHei","黑体","宋体",sans-serif;*/
+            font-family: "Arial","Microsoft YaHei","黑体",sans-serif;
+            background: rgb(253, 253, 253);
+
+            padding-bottom: 50px;
+        }
+
+        #toast {
+            position:absolute;
+            right: 15px;
+            bottom: 35px;
+        }
+    </style>
+        <style>
+        .content-tab {
+            position: relative;
+        }
+
+        pre.prettyprint {
+            border: none !important;
+        }
+        .request-content {
+            box-shadow: none;
+            border: 1px solid #e1e1e8;
+            border-top-style: none;
+            border-radius: 0 0 4px 4px;
+            min-height: 110px;
+        }
+
+        .response-content {
+            padding: 9px 14px !important;
+            background-color: #f7f7f9;
+            border: 1px solid #e1e1e8 !important;
+            border-top: none !important;
+            border-radius: 0 0 4px 4px;
+            min-height: 110px;
+            word-wrap: break-word;
+            word-break: break-all;
+            display: block;
+        }
+
+        .button-url-group {
+            border: 1px solid #CED4DA;
+        }
+
+        #button-send {
+            min-width: 70px;
+        }
+
+        .dropdown-history {
+            max-width: 95%;
+        }
+
+        .dropdown-history-item {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        #request-method {
+            text-transform: uppercase;
+        }
+
+        .content-tool-bar {
+            /*overflow: hidden;*/
+            opacity: 0.6;
+            position: absolute;
+            right: 5px;
+            top: 5px;
+        }
+
+        .content-tool-bar:hover {
+            opacity: 1;
+        }
+
+        a.nav-link {
+            color: #428bca;
+        }
+
+    </style>
+    <script>
+        var _initialize;
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?5355caba3fc9511e407d548c7c066f64";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+
+            window.addEventListener('error',function (event) {
+                event.stopImmediatePropagation();
+                if (event.target === window) {
+                    _hmt.push(['_trackEvent', 'error', event.target.constructor.name, event.message, 1]);
+                } else {
+                    _hmt.push(['_trackEvent', 'error', event.target.constructor.name, event.target.src, 1]);
+                }
+            }, true);
+            _initialize = true;
+        })();
+    </script>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand notranslate" href="/">Getman</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbar-menu">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/">接口测试</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/mock">模拟接口</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/regex">正则匹配</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/code">代码编辑</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/markdown">Markdown</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/chrome">Chrome插件</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-warning" href="https://www.aliyun.com/activity/daily/bestoffer?userCode=rzhz62lz" target="_blank" rel="nofollow">【爆款特惠】精选爆款产品低至0.95折</a>
+            </li>
+        </ul>
+
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-container="body" data-toggle="popover" data-placement="auto" data-trigger="focus" data-html="true" data-content="<div><img src='/img/like.png' width='200px'></div><div class='text-center'><a href='https://support.qq.com/product/153398' target='_blank' class='text-secondary'>反馈</a></div>"><i class="far fa-heart"></i></a>
+            </li>
+        </ul>
+    </div>
+
+</nav>
+<script>
+    //nav select
+    var navlinks = document.querySelectorAll(".navbar .nav-link");
+    navlinks.forEach(function (link) {
+        if (location.pathname.endsWith(link.pathname)) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
+    });
+</script>
+    <div class="container">
+
+        <div class="input-group input-group-lg mt-5 notranslate">
+            <div class="input-group-prepend">
+                <button class="btn btn-outline-secondary button-url-group" type="button" id="button-request-mode"><i class="fas fa-cloud-upload-alt" id="request-mode-icon-remote"></i><i class="fas fa-link d-none" id="request-mode-icon-local"></i></button>
+                <button class="btn btn-outline-secondary dropdown-toggle button-url-group" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" contenteditable="true" id="request-method">GET</button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item request-method-item" href="#">GET</a>
+                    <a class="dropdown-item request-method-item" href="#">POST</a>
+                    <a class="dropdown-item request-method-item" href="#">PUT</a>
+                    <a class="dropdown-item request-method-item" href="#">PATCH</a>
+                    <a class="dropdown-item request-method-item" href="#">DELETE</a>
+                    <a class="dropdown-item request-method-item" href="#">HEAD</a>
+                    <a class="dropdown-item request-method-item" href="#">OPTIONS</a>
+                </div>
+            </div>
+
+
+            <input type="text" class="form-control" autocomplete="off" id="request-url" placeholder="getman.cn/echo">
+
+            <div class="input-group-append">
+                <button type="button"
+                        class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split button-url-group"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="button-url-dropdown">
+                    <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right dropdown-history" aria-labelledby="url">
+                    <div class="ml-3">
+                        <div class="btn-group" role="group">
+
+                            <button type="button" class="btn btn-light" data-toggle="tooltip" data-placement="bottom" title="Copy cURL" id="button-copy-curl"><i class="fas fa-terminal"></i></button>
+                            <button type="button" class="btn btn-light" data-toggle="tooltip" data-placement="bottom" title="Clear history" id="button-clear-history"><i class="fas fa-trash-alt"></i></button>
+                            <button type="button" class="btn btn-light" data-toggle="tooltip" data-placement="bottom" title="Share" id="button-share" data-clipboard-text="https://getman.cn"><i class="fas fa-share"></i></button>
+                        </div>
+                    </div>
+                    <div role="separator" class="dropdown-divider"></div>
+
+                    <div class="" id="dropdown-history"></div>
+
+                </div>
+            </div>
+
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="button" id="button-send"><i class="fas fa-check"></i></button>
+            </div>
+        </div>
+
+        <div id="request" class="notranslate">
+            <h3 class="mt-4 mb-3">Request</h3>
+            <ul class="nav nav-tabs" id="request-tab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="request-tab-body" data-toggle="tab" href="#request-tab-content-body"
+                       role="tab" aria-controls="request-tab-content-body" aria-selected="true">Body</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="request-tab-header" data-toggle="tab" href="#request-tab-content-header"
+                       role="tab" aria-controls="request-content-header-tab" aria-selected="false">Header</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                       aria-haspopup="true" aria-expanded="false">Content-Type</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item request-content-type-item" href="#">application/xml</a>
+                        <a class="dropdown-item request-content-type-item" href="#">application/json</a>
+                        <a class="dropdown-item request-content-type-item" href="#">multipart/form-data</a>
+                        <a class="dropdown-item request-content-type-item"
+                           href="#">application/x-www-form-urlencoded</a>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane content-tab show active" id="request-tab-content-body" role="tabpanel"
+                     aria-labelledby="request-tab-body">
+                    <textarea class="form-control request-content" id="request-content-body" rows="4"
+                              placeholder="key1: value1 &#13;&#10;key2: value2"></textarea>
+                    <div class="btn-group btn-group-sm content-tool-bar" role="group">
+                        <button type="button" class="btn btn-light" id="button-request-body-view-kv">KV</button>
+                        <button type="button" class="btn btn-light" id="button-request-body-view-raw">Raw</button>
+                    </div>
+                </div>
+
+                <div class="tab-pane content-tab" id="request-tab-content-header" role="tabpanel"
+                     aria-labelledby="request-tab-header">
+                    <textarea class="form-control request-content" id="request-content-header" rows="4"
+                              placeholder="User-Agent: Mozilla/5.0 &#13;&#10;Cookie: key=value;"></textarea>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="response" class="notranslate">
+            <h3 class="mt-4 mb-3">Response</h3>
+            <ul class="nav nav-tabs notranslate" id="request-tab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="response-tab-body" data-toggle="tab" href="#response-content-body"
+                       role="tab" aria-controls="response-content-body" aria-selected="true">Body</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="response-tab-header" data-toggle="tab" href="#response-content-header"
+                       role="tab" aria-controls="response-content-header" aria-selected="false">Header</a>
+                </li>
+                <li class="nav-item d-none">
+                    <a class="nav-link" href="#">Set-Cookie</a>
+                </li>
+                <li class="ml-auto">
+                    <a class="nav-link" id="status" data-toggle="tooltip" data-placement="top" title="">
+                        <span class="badge badge-success d-none" id="status-code"></span>
+                        <div class="spinner-border spinner-border-sm text-primary d-none" role="status"
+                             id="status-loading"></div>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane show active content-tab" id="response-content-body" data-mark="baea096b3b7c215136f4a005e542dedd" role="tabpanel"
+                     aria-labelledby="response-tab-body">
+                    <div class="response-content">
+                        <pre class="prettyprint" id="response-content-body-raw"></pre>
+                        <iframe id="response-content-body-preview" scrolling="no" frameborder="0" width="100%" sandbox="allow-forms allow-scripts allow-popups allow-same-origin" referrerpolicy="no-referrer" srcdoc="..." class="d-none"></iframe>
+                    </div>
+
+                    <div class="btn-group btn-group-sm content-tool-bar" role="group">
+                        <button type="button" class="btn btn-light" id="button-response-view-raw">Raw</button>
+                        <button type="button" class="btn btn-light" id="button-response-view-preview">Preview</button>
+
+
+                        <button type="button" class="btn btn-light" id="button-response-copy" data-clipboard-action="copy" data-clipboard-target="#response-content-body-raw">Copy</button>
+                        <button type="button" class="btn btn-light" id="button-response-save">Save</button>
+                    </div>
+                </div>
+
+                <div class="tab-pane content-tab" id="response-content-header" role="tabpanel"
+                     aria-labelledby="response-tab-header">
+                    <div class="response-content">
+                        <pre class="prettyprint" id="response-content-header-raw"></pre>
+                    </div>
+
+                    <div class="btn-group btn-group-sm content-tool-bar" role="group">
+                        <button type="button" class="btn btn-light d-none" id="button-response-header-set-cookie">Set-Cookie</button>
+                        <button type="button" class="btn btn-light d-none" id="button-response-header-redirect">Redirect</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="float-right mt-3 text-secondary small">
+            <a class="text-secondary" href="#" ref="popover" data-toggle="popover" data-container="body" data-placement="auto" data-trigger="focus" data-html="true" data-content="<div><a href='/img/miniprogram.png'><img src='/img/miniprogram.png' width='200px'></a></div>">小程序</a>
+            <a class="text-secondary" href="https://greasyfork.org/zh-CN/scripts/403087-getman" target="_blank">跨域插件</a>
+            <a class="text-secondary" href="?ver=v1">v1.0</a>
+            | <sapn class="font-weight-bold">ver:2.0</sapn>
+        </div>
+
+    </div>
+
+
+<div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="6000" id="toast">
+    <div class="toast-header">
+        <strong class="mr-auto" id="toast-title"></strong>
+        <small class="text-muted" id="toast-subtitle"></small>
+        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="toast-body" id="toast-body">
+    </div>
+</div>
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
+
+
+
+<script src="https://lib.baomitu.com/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://lib.baomitu.com/popper.js/1.16.1/umd/popper.min.js"></script>
+<script src="https://lib.baomitu.com/twitter-bootstrap/4.4.1/js/bootstrap.min.js"></script>
+<script src="https://lib.baomitu.com/clipboard.js/2.0.6/clipboard.min.js"></script>
+<script src="/js/common.js?v=102"></script>
+    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+    <script src="/js/request.js?v=103"></script>
+</body>
+</html>
+<!-- 版权声明：本站原创内容未经允许请勿复制转载或用于商业用途 -->

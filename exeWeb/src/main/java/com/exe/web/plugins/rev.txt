@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rule name="跑单任务" corn="1">
+	<seg name="跑单任务">
+
+        <code name="解析数据" hasBody="true">
+        <![CDATA[
+             import com.alibaba.fastjson.JSON;
+             import javax.servlet.http.HttpServletRequest;
+             import kkd.common.util.DateUtil;
+             import java.util.*;
+            def exe(a,cmdHandle){
+                System.out.println("------rev data----------");
+                def vars=cmdHandle.vars
+                HttpServletRequest req= (HttpServletRequest) cmdHandle.getSys().get("req");
+                System.out.println("------rev data---1-------");
+                Map<String,String> map=new HashMap<>();
+                String url=req.getParameter("url");
+                map.put("url",url);
+                map.put("stbID",req.getParameter("stbID"));
+                map.put("STBType",req.getParameter("STBType"));
+                map.put("mac",req.getParameter("mac"));
+                map.put("userAgent",req.getHeader("User-Agent"));
+                System.out.println("------rev data-------3---");
+                map.put("userID",req.getParameter("userId"));
+                map.put("user_id",req.getParameter("userId"));
+
+                map.put("token",req.getParameter("token"));
+                map.put("product_id",req.getParameter("product_id"));
+                map.put("platform",req.getParameter("platform"));
+                System.out.println("------rev data-------3---");
+                String data=JSON.toJSONString(map);
+                System.out.println("------rev data---4----$data-$map.userID--");
+                //putLog(map.get("userID"),'',map.get("token"),map.get("product_id"),data,"未处理");
+            }
+
+             /**
+          放入黑名单
+          */
+          def putLog( user_id, user_type, token, product_id, description, data){
+                Date create_date=new java.util.Date();
+                String create_dateStr=DateUtil.format(create_date,"yyyy-MM-dd HH:mm:ss");
+                kkd.common.dao.dbuitl.JDBC.DbHelper dh=kkd.common.dao.dbuitl.JDBC.getDefaultNoTransactionDbHelper();
+                List<SqlParameter> parameters=new ArrayList<>();
+                try{
+                    parameters.add(new SqlParameter(Types.VARCHAR,user_id));
+                    parameters.add(new SqlParameter(Types.VARCHAR,user_type));
+                    parameters.add(new SqlParameter(Types.VARCHAR,token));
+                    parameters.add(new SqlParameter(Types.VARCHAR,product_id));
+                    parameters.add(new SqlParameter(Types.VARCHAR,create_dateStr));
+                    parameters.add(new SqlParameter(Types.VARCHAR,description));
+                    parameters.add(new SqlParameter(Types.VARCHAR,data));
+                    String sql="insert into iptv_order_user(user_id,user_type,product_id,create_date,description,data)values";
+                    sql=sql+"(?,?,?,?,?,?)";
+                    boolean success=dh.executeSql(sql);
+                    if(success){
+                        return true;
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                return false;
+            }
+         ]]>
+        </code>
+		<resp name="成功" code="200" msg="成功" key="rs" />
+	</seg>
+
+</rule>

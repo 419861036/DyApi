@@ -1,0 +1,1257 @@
+(function anonymous(
+) {
+;(function(window, undefined) {
+    var eZone = function() {
+        function Box() {
+            this.curIndex = 0;
+            this.curPage = 1;
+            this.totalEle = 0;
+            this.totalPage = 1;
+            this.id = undefined;
+            this.X = arguments[0] || 0;
+            this.Y = arguments[1] || 0;
+            this.dirs = arguments[2] || [-1, -1, -1, -1];
+            this.eles = arguments[3] || [];
+            this.eleFocusAttr = arguments[4];
+            this.eleBlurAttr = arguments[5];
+            this.autoHorizontalFlip = false;
+            this.autoVerticalFlip = false;
+            this.autoCycleFlip = false;
+
+            this.Arrangement = "X";
+            this.lastLineTurn = true;
+            this.focusLast = false;
+            this.pageTurnKeep = false;
+            this.scrollArg = [];
+            this.pageTurnFlag = 0;
+
+            this.canSlide = false;
+            this.slideEle = undefined;
+            this.slideType = "auto";
+            this.slideOffset = [0, 0, 0, 0];
+            this.leftStep = 0;
+            this.topStep = 0;
+
+            this.IOIsRecordArr = [false, false, false, false];
+            this.IORecordIndexArr = [0, 0, 0, 0];
+            this.IORecordAttrArr = [];
+
+            this.darkFlag = false;
+            this.darkPage = 1;
+            this.darkIndex = 0;
+            this.darkFocusAttr = undefined;
+            this.darkBlurAttr = undefined;
+
+            this.upEvent = function() {};
+            this.downEvent = function() {};
+            this.leftEvent = function() {};
+            this.rightEvent = function() {};
+            this.boxOkEvent = function() {};
+            this.focusEvent = function() {};
+            this.blurEvent = function() {};
+            this.boxPageTurnEvent = function() {};
+            this.boxOutEvent = function() {};
+            this.boxInEvent = function() {};
+
+            this.setDarkfocus = function(darkPage, darkIndex, darkFocusAttr, darkBlurAttr) {
+                this.darkFlag = true;
+                this.darkPage = darkPage;
+                this.darkIndex = darkIndex;
+                this.darkFocusAttr = darkFocusAttr;
+                this.darkBlurAttr = darkBlurAttr;
+                if (this.curPage === darkPage) {
+                    this.eles[darkIndex].focusAttr = darkFocusAttr;
+                    this.eles[darkIndex].blurAttr = darkBlurAttr;
+                    this.eles[darkIndex].changeAttr(darkBlurAttr);
+                }
+            };
+
+            this.changeDarkFocus = function() {
+                if (this.curPage === this.darkPage) {
+                    this.eles[this.darkIndex].focusAttr = this.darkFocusAttr;
+                    this.eles[this.darkIndex].blurAttr = this.darkBlurAttr;
+                    this.eles[this.darkIndex].changeAttr(this.darkBlurAttr);
+                } else {
+                    this.eles[this.darkIndex].focusAttr = this.eleFocusAttr;
+                    this.eles[this.darkIndex].blurAttr = this.eleBlurAttr;
+                    this.eles[this.darkIndex].changeAttr(this.eleBlurAttr);
+                }
+            };
+
+            this.setSlide = function(tempEle, slideType, leftStep, topStep, slideOffset) {
+                this.canSlide = true;
+                this.slideEle = tempEle;
+                this.slideType = slideType;
+                this.leftStep = leftStep || this.topStep;
+                this.topStep = topStep || this.topStep;
+                this.slideOffset = slideOffset || this.slideOffset;
+            };
+
+            this.changeFocus = function(index, focusOrNot) {
+                if (focusOrNot) {
+                    this.curIndex = index;
+                    this.focusEvent();
+                } else {
+                    this.blurEvent();
+                }
+                if (this.canSlide) {
+                    if (focusOrNot) {
+                        var curEle = this.eles[index].htmlEle;
+                        if (!curEle) {
+                            curEle = $(this.eles[index].htmlEleId);
+                        }
+                        if (curEle !== null && !!this.slideEle) {
+                            var tempLeft = 0;
+                            var tempTop = 0;
+                            if (this.slideType === "auto") {
+                                tempLeft = this.getAbsPoint(curEle).x;
+                                tempTop = this.getAbsPoint(curEle).y;
+                            } else if (this.slideType === "manual") {
+                                tempLeft = this.slideOffset[0];
+                                tempTop = this.slideOffset[1];
+                                if (this.Arrangement === "X") {
+                                    tempLeft += this.leftStep * (this.curIndex % this.Y);
+                                    tempTop += this.topStep * Math.floor(this.curIndex / this.Y);
+                                } else if (this.Arrangement === "Y") {
+                                    tempLeft += this.leftStep * Math.floor(this.curIndex / this.X);
+                                    tempTop += this.topStep * (this.curIndex % this.X);
+                                }
+                            }
+                            var tempCssText = "left:" + tempLeft + "px;top:" + tempTop + "px;width:" + (curEle.offsetWidth + this.slideOffset[2]) + "px;height:" + (curEle.offsetHeight + this.slideOffset[3]) + "px;transitionDuration:" + this.slideEle.style.transitionDuration + ";-webkit-transition-duration:" + this.slideEle.style.transitionDuration + ";-moz-transition-duration:" + this.slideEle.style.transitionDuration + ";-o-transition-duration:" + this.slideEle.style.transitionDuration;
+                            this.slideEle.style.cssText = tempCssText;
+                            if (this.slideEle.style.display === "none") {
+                                this.slideEle.style.display = "block";
+                            }
+                        }
+                    }
+                    this.eles[index].toggleFocusEvent(focusOrNot);
+                    this.eles[index].marqueeScrollEvent(focusOrNot);
+                } else {
+                    this.eles[index].changeFocus(focusOrNot);
+                }
+            };
+
+            this.move = function(dir) {
+                var tempIndex = this.eles[this.curIndex];
+                if (tempIndex.moveDirs[dir] != -1 && tempIndex.moveDirs[dir] < this.totalEle) {
+                    this.changeFocus(this.curIndex, false);
+                    this.curIndex = tempIndex.moveDirs[dir];
+                    this.changeFocus(this.curIndex, true);
+                }
+            };
+
+            this.ok = function() {
+                this.boxOkEvent();
+                if (this.darkFlag) {
+                    if (this.curPage === this.darkPage) {
+                        this.eles[this.darkIndex].focusAttr = this.eleFocusAttr;
+                        this.eles[this.darkIndex].blurAttr = this.eleBlurAttr;
+                        this.eles[this.darkIndex].changeAttr(this.eleBlurAttr);
+                    }
+                    this.darkIndex = this.curIndex;
+                    this.darkPage = this.curPage;
+                    this.eles[this.darkIndex].focusAttr = this.darkFocusAttr;
+                    this.eles[this.darkIndex].blurAttr = this.darkBlurAttr;
+                    if (this.canSlide) {
+                        this.eles[this.darkIndex].changeAttr(this.darkBlurAttr);
+                    } else {
+                        this.eles[this.darkIndex].changeAttr(this.darkFocusAttr);
+                    }
+                }
+                this.eles[this.curIndex].ok();
+            };
+
+            this.boxIn = function(index, dir) {
+                Wrapper.curBoxId = this.id;
+                var tempIndex = index;
+                var tempDir = (dir + 2) % 4;
+                if (this.IOIsRecordArr[tempDir]) {
+                    tempIndex = this.IORecordIndexArr[tempDir];
+                }
+                if (!!this.totalEle && tempIndex > this.totalEle - 1) {
+                    tempIndex = this.totalEle - 1;
+                }
+                this.changeFocus(tempIndex, true);
+                this.boxInEvent(index, dir);
+            };
+
+            this.boxOut = function(index, dir) {
+                var tempIndex = index;
+                if (!!this.totalEle && tempIndex > this.totalEle - 1) {
+                    tempIndex = this.totalEle - 1;
+                }
+                if (this.IOIsRecordArr[dir]) {
+                    this.IORecordIndexArr[dir] = tempIndex;
+                    if (this.darkFlag && this.curPage === this.darkPage) {
+                        this.IORecordIndexArr[dir] = this.darkIndex;
+                    }
+
+                    if (this.IORecordAttrArr[dir] !== undefined && !this.darkFlag) {
+                        this.eles[tempIndex].changeAttr(this.IORecordAttrArr[dir]);
+                        this.eles[tempIndex].toggleFocusEvent(false);
+                        this.eles[tempIndex].marqueeScrollEvent(false);
+                    } else {
+                        this.changeFocus(tempIndex, false);
+                    }
+                } else {
+                    this.changeFocus(tempIndex, false);
+                }
+                this.boxOutEvent(index, dir);
+            };
+
+            this.pageTurn = function(num) {
+                if (this.totalPage > 1) {
+                    var nextPage = this.curPage + num;
+                    if (nextPage > this.totalPage) {
+                        if (this.autoCycleFlip) {
+                            nextPage = 1;
+                        } else {
+                            return;
+                        }
+                    } else if (nextPage < 1) {
+                        if (this.autoCycleFlip) {
+                            nextPage = this.totalPage;
+                        } else {
+                            return;
+                        }
+                    }
+                    this.curPage = nextPage;
+                    this.pageTurnFlag = num;
+                    this.boxPageTurnEvent(num);
+                }
+            };
+
+            this.pageTurnEnd = function() {
+                if (this.pageTurnFlag !== 0) {
+                    this.setScrollEvent();
+                    if (this.darkFlag) {
+                        this.changeDarkFocus();
+                    }
+                    this.changeFocus(this.curIndex, false);
+                    var nextIndexId = 0;
+                    if (this.pageTurnFlag === 1) {
+                        nextIndexId = 0;
+                    } else if (this.pageTurnFlag === -1) {
+                        nextIndexId = this.totalEle - 1;
+                    }
+                    if (this.pageTurnKeep) {
+                        if (this.autoVerticalFlip) {
+                            if (this.Arrangement === "X") {
+                                var curIndexPositionV = this.curIndex % this.Y;
+                                var endIndexPositionV = (this.totalEle - 1) % this.Y;
+                                var preEndLinesV = Math.ceil(this.totalEle / this.Y);
+                                if (this.pageTurnFlag === 1) {
+                                    if (curIndexPositionV < this.totalEle) {
+                                        this.changeFocus(curIndexPositionV, true);
+                                    } else {
+                                        this.changeFocus(this.totalEle - 1, true);
+                                    }
+                                } else {
+                                    if (curIndexPositionV <= endIndexPositionV) {
+                                        this.changeFocus((preEndLinesV - 1) * this.Y + curIndexPositionV, true);
+                                    } else {
+                                        this.changeFocus(this.totalEle - 1, true);
+                                    }
+                                }
+                            } else if (this.Arrangement === "Y") {
+                                var curColumnV = Math.ceil((this.curIndex + 1) / this.X);
+                                var goColumnV = Math.ceil(this.totalEle / this.X);
+                                if (this.pageTurnFlag === 1) {
+                                    if (goColumnV < curColumnV) {
+                                        this.changeFocus((goColumnV - 1) * this.X, true);
+                                    } else {
+                                        this.changeFocus((curColumnV - 1) * this.X, true);
+                                    }
+                                } else {
+                                    if (goColumnV <= curColumnV) {
+                                        this.changeFocus(this.totalEle - 1, true);
+                                    } else {
+                                        this.changeFocus(curColumnV * this.X - 1, true);
+                                    }
+                                }
+                            }
+                        } else if (this.autoHorizontalFlip) {
+                            if (this.Arrangement === "X") {
+                                var curColumnH = Math.ceil((this.curIndex + 1) / this.Y);
+                                var goColumnH = Math.ceil(this.totalEle / this.Y);
+                                if (this.pageTurnFlag === 1) {
+                                    if (goColumnH < curColumnH) {
+                                        this.changeFocus((goColumnH - 1) * this.Y, true);
+                                    } else {
+                                        this.changeFocus((curColumnH - 1) * this.Y, true);
+                                    }
+                                } else {
+                                    if (goColumnH <= curColumnH) {
+                                        this.changeFocus(this.totalEle - 1, true);
+                                    } else {
+                                        this.changeFocus(curColumnH * this.Y - 1, true);
+                                    }
+                                }
+                            } else if (this.Arrangement === "Y") {
+                                var curIndexPositionH = this.curIndex % this.X;
+                                var endIndexPositionH = (this.totalEle - 1) % this.X;
+                                var preEndLinesH = Math.ceil(this.totalEle / this.X);
+                                if (this.pageTurnFlag === 1) {
+                                    if (curIndexPositionH < this.totalEle) {
+                                        this.changeFocus(curIndexPositionH, true);
+                                    } else {
+                                        this.changeFocus(this.totalEle - 1, true);
+                                    }
+                                } else {
+                                    if (curIndexPositionH <= endIndexPositionH) {
+                                        this.changeFocus((preEndLinesH - 1) * this.X + curIndexPositionH, true);
+                                    } else {
+                                        this.changeFocus(this.totalEle - 1, true);
+                                    }
+                                }
+                            }
+                        } else {
+                            this.changeFocus(nextIndexId, true);
+                        }
+                    } else {
+                        this.changeFocus(nextIndexId, true);
+                    }
+                }
+            };
+
+            this.setMoveArray = function(a,b,c,d) {
+                var array = [a,b,c,d];
+                for (var j = 0; j < 4; j++) {
+                    var moveStrArr = array[j];
+                    if (typeof moveStrArr === 'string' && moveStrArr !== '-1') {
+                        var moveIndexs = moveStrArr.split(",");
+                        var ml = moveIndexs.length;
+                        for (var i = 0; i < ml; i++) {
+                            var tempMoveIndex = moveIndexs[i].split('-');
+                            this.eles[tempMoveIndex[0]].moveDirs[j] = tempMoveIndex[1];
+                        }
+                    }
+                }
+            };
+
+            this.setBoxDir = function(dir, boxId) {
+                var preDir = this.dirs[dir];
+                var l = this.eles.length;
+                this.dirs[dir] = boxId;
+                for (var i = 0; i < l; i++) {
+                    var tempDir = this.eles[i].moveDirs[dir].toString();
+                    if (tempDir.indexOf('>') != -1 && tempDir.indexOf(preDir) === 0) {
+                        this.eles[i].moveDirs[dir] = boxId + ">0";
+                    }
+                }
+            };
+
+            this.setBoxCircleEle = function(type) {
+                if (type === "X") {
+                    this.eles[0].moveDirs[1] = this.eles.length - 1;
+                    this.eles[this.eles.length - 1].moveDirs[3] = 0;
+                } else if (type === "Y") {
+                    this.eles[0].moveDirs[0] = this.eles.length - 1;
+                    this.eles[this.eles.length - 1].moveDirs[2] = 0;
+                }
+            };
+
+            this.setViewArrangement = function(type) {
+                var X = this.X;
+                var Y = this.Y;
+                var dirs = this.dirs;
+                var l = this.eles.length;
+                this.Arrangement = type;
+                if (type === "X") {
+                    for (var i = 0; i < l; i++) {
+                        var tempDirs = [i - Y < 0 ? (dirs[0] === -1 ? -1 : dirs[0] + ">0") : i - Y, i % Y === 0 ? (dirs[1] === -1 ? -1 : dirs[1] + ">0") : i - 1, i + Y > X * Y - 1 ? (dirs[2] === -1 ? -1 : dirs[2] + ">0") : i + Y, i % Y === Y - 1 ? (dirs[3] === -1 ? -1 : dirs[3] + ">0") : i + 1];
+                        this.eles[i].moveDirs = tempDirs;
+                    }
+                } else if (type === "Y") {
+                    for (var k = 0; k < l; k++) {
+                        var tempDirsK = [k % X === 0 ? (dirs[0] === -1 ? -1 : dirs[0] + ">0") : k - 1, k - X < 0 ? (dirs[1] === -1 ? -1 : dirs[1] + ">0") : k - X, k % X === X - 1 ? (dirs[2] === -1 ? -1 : dirs[2] + ">0") : k + 1, k + X > X * Y - 1 ? (dirs[3] === -1 ? -1 : dirs[3] + ">0") : k + X];
+                        this.eles[k].moveDirs = tempDirsK;
+                    }
+                }
+            };
+
+            this.clearEles = function() {
+                var l = this.eles.length;
+                for (var i = 0; i < l; i++) {
+                    this.eles[i].htmlEle = null;
+                    this.eles[i].scrollEle = null;
+                }
+            };
+
+            this.setScrollEvent = function() {
+                var _arguments = arguments;
+                if (_arguments.length > 0) {
+                    this.scrollArg = _arguments;
+                } else if (this.scrollArg.length > 0) {
+                    _arguments = this.scrollArg;
+                }
+                var elePrefix = _arguments[0] || '';
+                var l = _arguments[1] || 0;
+                var isEllipsis = _arguments[_arguments.length - 1];
+                if (_arguments.length > 2) {
+                    if (typeof _arguments[2] === 'boolean') {
+                        var el = this.eles.length;
+                        for (var i = 0; i < el; i++) {
+                            if (!!$(elePrefix + i)) {
+                                this.eles[i].scrollId = elePrefix + i;
+                                this.eles[i].scrollText = $(elePrefix + i).innerHTML;
+                                this.eles[i].scrollCutStr = Util.getCutedStr(this.eles[i].scrollText, parseInt(l), isEllipsis);
+                                this.eles[i].marqueeScrollEvent(false);
+                            }
+                        }
+                    } else if (Util.isArray(_arguments[2])) {
+                        var al = _arguments[2].length;
+                        for (var k = 0; k < al; k++) {
+                            var index = _arguments[2][k];
+                            if (!!$(elePrefix + index) && typeof index === 'number') {
+                                this.eles[index].scrollId = elePrefix + index;
+                                this.eles[index].scrollText = $(elePrefix + index).innerHTML;
+                                this.eles[index].scrollCutStr = Util.getCutedStr(this.eles[index].scrollText, parseInt(l), isEllipsis);
+                                this.eles[index].marqueeScrollEvent(false);
+                            }
+                        }
+                    }
+                }
+            };
+
+            this.getAbsPoint = function(e) {
+                var x = e.offsetLeft,
+                    y = e.offsetTop,
+                    _e = e.offsetParent;
+                while (_e) {
+                    x += _e.offsetLeft;
+                    y += _e.offsetTop;
+                    _e = _e.offsetParent;
+                }
+                return { "x": x, "y": y };
+            };
+        }
+
+        function Ele() {
+            this.htmlEle = undefined;
+            this.eleUrl = undefined;
+            this.htmlEleId = arguments[0] || '';
+            this.focusAttr = arguments[1];
+            this.blurAttr = arguments[2];
+            this.moveDirs = arguments[3] || [-1, -1, -1, -1];
+
+            this.useMarquee = true;
+            this.scrollEle = undefined;
+            this.scrollId = "";
+            this.scrollCutStr = "";
+            this.scrollText = "";
+            this.scrollEvent = function() {};
+
+            this.eleOkEvent = function() {};
+            this.focusEvent = function() {};
+            this.blurEvent = function() {};
+
+            this.ok = function() {
+                this.eleOkEvent();
+                if (!!this.eleUrl) {
+                    window.location = this.eleUrl;
+                }
+            };
+
+            this.changeFocus = function(focusOrNot) {
+                if (focusOrNot) {
+                    this.changeAttr(this.focusAttr);
+                } else {
+                    this.changeAttr(this.blurAttr);
+                }
+                this.toggleFocusEvent(focusOrNot);
+                this.marqueeScrollEvent(focusOrNot);
+            };
+
+            this.marqueeScrollEvent = function(focusOrNot) {
+                if (focusOrNot) {
+                    if (this.scrollCutStr !== this.scrollText) {
+                        if (this.useMarquee) {
+                            if (!this.scrollEle) {
+                                this.scrollEle = $(this.scrollId);
+                            }
+                            if (this.scrollEle !== null) {
+                                this.scrollEle.innerHTML = "<marquee direction='left' scrolldelay='150'>" + this.scrollText + "</marquee>";
+                            }
+                        } else {
+                            this.scrollEvent();
+                        }
+                    }
+                } else {
+                    if (this.scrollCutStr !== this.scrollText) {
+                        if (this.useMarquee) {
+                            if (!this.scrollEle) {
+                                this.scrollEle = $(this.scrollId);
+                            }
+                            if (this.scrollEle !== null) {
+                                this.scrollEle.innerHTML = this.scrollCutStr;
+                            }
+                        } else {
+                            this.scrollEvent();
+                        }
+                    }
+                }
+            };
+
+            this.toggleFocusEvent = function(focusOrNot) {
+                if (focusOrNot) {
+                    this.focusEvent();
+                } else {
+                    this.blurEvent();
+                }
+            };
+
+            this.changeAttr = function(tempAttr) {
+                if (!!tempAttr) {
+                    var tempProperty = tempAttr.toString().split(':');
+                    if (!this.htmlEle) {
+                        this.htmlEle = $(this.htmlEleId);
+                    }
+                    if (this.htmlEle !== null) {
+                        this.htmlEle[tempProperty[0]] = tempProperty[1];
+                    }
+                }
+            };
+        }
+
+        function $(id) {
+            return document.getElementById(id);
+        }
+
+        function BoxInstance(X, Y, dirs, elesIdStr, elesFocusAttr, elesUnfocusAttr) {
+            var eles = [];
+            var l = X * Y;
+            for (var i = 0; i < l; i++) {
+                var tempDirs = [i - Y < 0 ? (dirs[0] === -1 ? -1 : dirs[0] + ">0") : i - Y, i % Y === 0 ? (dirs[1] === -1 ? -1 : dirs[1] + ">0") : i - 1, i + Y > X * Y - 1 ? (dirs[2] === -1 ? -1 : dirs[2] + ">0") : i + Y, i % Y === Y - 1 ? (dirs[3] === -1 ? -1 : dirs[3] + ">0") : i + 1];
+                eles[i] = new Ele(elesIdStr + i, elesFocusAttr, elesUnfocusAttr, tempDirs);
+            }
+            var tempBox = new Box(X, Y, dirs, eles, elesFocusAttr, elesUnfocusAttr);
+            tempBox.totalEle = X * Y;
+            return tempBox;
+        }
+
+        return {
+            $: $,
+            Box: Box,
+            Ele: Ele,
+            BoxInstance: BoxInstance
+        };
+    }();
+    window.$ = eZone.$;
+    window.eZone = eZone;
+}(window));
+(function(window, undefined) {
+    var Wrapper = {
+        curBoxId: 0,
+        indexId: 0,
+        boxes: [],
+        keyPressLock: false,
+        dir: undefined,
+        backUrl: undefined,
+
+        t_num: undefined,
+        channelNumCount: 0,
+        tempChannelNum: 0,
+        channelNum: 0,
+        goToChannelURLEvent: function() {},
+
+        volumeUpEvent: function() {},
+        volumeDownEvent: function() {},
+        volumeMuteEvent: function() {},
+        utilityEvent: function() {},
+        goHomePageEvent: function () {},
+        okEvent: function() {},
+        backEvent: function() {},
+        delEvent: function() {},
+        numTypeEvent: function() {},
+        defaultKeyEvent : function(){},
+
+        init: function() {
+            this.curBoxId = arguments[0] || 0;
+            this.indexId = arguments[1] || 0;
+            this.boxes = arguments[2] || [];
+            var bl = this.boxes.length;
+            for (var i = 0; i < bl; i++) {
+                this.boxes[i].id = i;
+            }
+            this.boxes[this.curBoxId].changeFocus(this.indexId, true);
+        },
+
+        numType: function(num) {
+            this.numTypeEvent(num);
+        },
+
+        goChannelEvent: function(num) {
+            this.createNumPanel(num);
+            this.showChannelNum(num);
+            if (this.t_num !== undefined) {
+                clearTimeout(this.t_num);
+            }
+            this.t_num = setTimeout(this.goToChannelURLEvent, 3000);
+        },
+
+        createNumPanel: function(num) {
+            if (eZone.$("channelNumPanel") === null) {
+                var channelNumDiv = document.createElement("div");
+                channelNumDiv.id = "channelNumPanel";
+                channelNumDiv.style.color = "#66cc00";
+                channelNumDiv.style.fontSize = "50px";
+                channelNumDiv.style.left = "1120px";
+                channelNumDiv.style.top = "30px";
+                channelNumDiv.style.fontWeight = "bold";
+                channelNumDiv.style.position = "absolute";
+                channelNumDiv.style.zIndex = 20;
+                if (document.body !== null) {
+                    document.body.appendChild(channelNumDiv);
+                }
+            }
+            eZone.$("channelNumPanel").style.display = "block";
+        },
+
+        showChannelNum: function(num) {
+            this.channelNumCount++;
+            if (this.channelNumCount > 3) {
+                return true;
+            }
+            this.tempChannelNum = this.tempChannelNum * 10 + num;
+            this.channelNum = this.tempChannelNum;
+            if (eZone.$("channelNumPanel") !== null) {
+                eZone.$("channelNumPanel").innerHTML = this.channelNum;
+            }
+        },
+
+        saveFocus: function() {
+            var curBox = this.boxes[this.curBoxId];
+            var l = this.boxes.length;
+            var curFocStr = '{curBoxId:' + curBox.id + ',curIndex:' + curBox.curIndex + ',datas:[';
+            for (var i = 0; i < l; i++) {
+                curBox = this.boxes[i];
+                curFocStr += '{\"boxId\":' + curBox.id + ',\"curIndex\":' + curBox.curIndex + ',\"darkIndex\":' + curBox.darkIndex + ',\"curPage\":' + curBox.curPage + ',\"darkPage\":' + curBox.darkPage;
+                curFocStr += '},';
+            }
+            curFocStr = curFocStr.substr(0, curFocStr.length - 1);
+            curFocStr += ']}';
+            var tempCurPageStr = window.location.href.split('?')[0];
+            var tempCurPageName = tempCurPageStr.substring(tempCurPageStr.lastIndexOf("/") + 1);
+            tempCurPageName = tempCurPageName.substring(0, tempCurPageName.lastIndexOf("."));
+            if (tempCurPageName.indexOf("-") > -1) {
+                tempCurPageName = tempCurPageName.replaceAll("-", "");
+            }
+            Util.setCookie("lastfoc", tempCurPageName + "-" + curFocStr);
+        },
+
+        move: function(dir) {
+            this.dir = dir;
+            var num = (dir === 0 || dir === 1 ? -1 : 1);
+            var tempBox = this.boxes[this.curBoxId];
+            if (!tempBox) {
+                return;
+            }
+            var tempIndex = tempBox.eles[tempBox.curIndex];
+            var tempDir = tempIndex.moveDirs[dir];
+
+            if (dir === 0) {
+                tempBox.upEvent();
+                if (tempBox.autoVerticalFlip) {
+                    if (tempBox.curPage > 1 || tempBox.autoCycleFlip) {
+                        if (tempBox.Arrangement === "X") {
+                            if (tempBox.curIndex < tempBox.Y) {
+                                tempBox.pageTurn(num);
+                                return;
+                            }
+                        } else if (tempBox.Arrangement === "Y") {
+                            if (tempBox.curIndex % tempBox.X === 0) {
+                                tempBox.pageTurn(num);
+                                return;
+                            }
+                        }
+                    }
+                }
+            } else if (dir === 1) {
+                tempBox.leftEvent();
+                if (tempBox.autoHorizontalFlip) {
+                    if (tempBox.curPage > 1 || tempBox.autoCycleFlip) {
+                        if (tempBox.Arrangement === "X") {
+                            if (tempBox.curIndex % tempBox.Y === 0) {
+                                tempBox.pageTurn(num);
+                                return;
+                            }
+                        } else if (tempBox.Arrangement === "Y") {
+                            if (tempBox.curIndex < tempBox.X) {
+                                tempBox.pageTurn(num);
+                                return;
+                            }
+                        }
+                    }
+                }
+            } else if (dir === 2) {
+                tempBox.downEvent();
+                if (tempBox.autoVerticalFlip) {
+                    if (tempBox.focusLast && tempBox.curPage === tempBox.totalPage && (Math.ceil(tempBox.totalEle / tempBox.Y) - 1) * tempBox.Y > tempBox.curIndex && tempBox.curIndex > tempBox.totalEle - 1 - tempBox.Y) {
+                        tempBox.changeFocus(tempBox.curIndex, false);
+                        tempBox.changeFocus(tempBox.totalEle - 1, true);
+                        return;
+                    }
+                    if (tempBox.curPage < tempBox.totalPage || tempBox.autoCycleFlip) {
+                        if (tempBox.Arrangement === "X") {
+                            if (tempBox.lastLineTurn) {
+                                if (Math.ceil((tempBox.curIndex + 1) / tempBox.Y) === Math.ceil(tempBox.totalEle / tempBox.Y)) {
+                                    tempBox.pageTurn(num);
+                                    return;
+                                }
+                            } else if (tempBox.curIndex + tempBox.Y > tempBox.totalEle - 1) {
+                                tempBox.pageTurn(num);
+                                return;
+                            }
+                        } else if (tempBox.Arrangement === "Y") {
+                            if (tempBox.curIndex % tempBox.X === tempBox.X - 1 || tempBox.curIndex === tempBox.totalEle - 1) {
+                                tempBox.pageTurn(num);
+                                return;
+                            }
+                        }
+                    }
+                }
+            } else if (dir === 3) {
+                tempBox.rightEvent();
+                if (tempBox.autoHorizontalFlip) {
+                    if (tempBox.focusLast && (Math.ceil(tempBox.totalEle / tempBox.X) - 1) * tempBox.X > tempBox.curIndex && tempBox.curIndex > tempBox.totalEle - 1 - tempBox.X) {
+                        tempBox.changeFocus(tempBox.curIndex, false);
+                        tempBox.changeFocus(tempBox.totalEle - 1, true);
+                        return;
+                    }
+                    if (tempBox.curPage < tempBox.totalPage || tempBox.autoCycleFlip) {
+                        if (tempBox.Arrangement === "X") {
+                            if (tempBox.curIndex % tempBox.Y === tempBox.Y - 1 || tempBox.curIndex === tempBox.totalEle - 1) {
+                                tempBox.pageTurn(num);
+                                return;
+                            }
+                        } else if (tempBox.Arrangement === "Y") {
+                            if (tempBox.lastLineTurn) {
+                                if (Math.ceil((tempBox.curIndex + 1) / tempBox.X) === Math.ceil(tempBox.totalEle / tempBox.X)) {
+                                    tempBox.pageTurn(num);
+                                    return;
+                                }
+                            } else if (tempBox.curIndex + tempBox.X > tempBox.totalEle - 1) {
+                                tempBox.pageTurn(num);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (tempDir != -1) {
+                if (typeof tempDir === "string" && tempDir.indexOf('>') > -1) {
+                    var endBoxId = parseInt(tempDir.split('>')[0]);
+                    var endIndex = parseInt(tempDir.split('>')[1]);
+                    if (endBoxId > this.boxes.length - 1 || this.boxes[endBoxId].totalEle <= 0) {
+                        return;
+                    }
+                    tempBox.boxOut(tempBox.curIndex, dir);
+                    if (this.boxes.length > endBoxId) {
+                        if ((!this.boxes[endBoxId].canSlide && tempBox.canSlide) || (this.boxes[endBoxId].canSlide && tempBox.canSlide && (this.boxes[endBoxId].slideEle != tempBox.slideEle))) {
+                            tempBox.slideEle.style.display = "none";
+                        }
+                        this.boxes[endBoxId].boxIn(endIndex, dir);
+                    }
+                } else if (typeof tempDir === "number" && tempBox.eles[tempBox.curIndex].moveDirs[dir] >= tempBox.totalEle) {
+                    var endBoxIdn = tempBox.dirs[dir];
+                    if (endBoxIdn === -1 || this.boxes[endBoxIdn].totalEle <= 0) {
+                        return;
+                    }
+                    tempBox.boxOut(tempBox.curIndex, dir);
+                    if (this.boxes.length > endBoxIdn) {
+                        if ((!this.boxes[endBoxIdn].canSlide && tempBox.canSlide) || (this.boxes[endBoxIdn].canSlide && tempBox.canSlide && (this.boxes[endBoxIdn].slideEle != tempBox.slideEle))) {
+                            tempBox.slideEle.style.display = "none";
+                        }
+                        this.boxes[endBoxIdn].boxIn(0, dir);
+                    }
+                } else {
+                    tempBox.move(dir);
+                }
+            }
+        },
+
+        ok: function() {
+            this.okEvent();
+            if (!!this.boxes[this.curBoxId]) {
+                this.boxes[this.curBoxId].ok();
+            }
+        },
+
+        del: function() {
+            this.delEvent();
+        },
+
+        goBack: function() {
+            this.backEvent();
+            if (!!this.backUrl) {
+                window.location = this.backUrl;
+            }
+        },
+
+        pageTurn: function(num, boxId) {
+            var tempBox = this.boxes[boxId === undefined ? this.curBoxId : boxId];
+            if (!!tempBox) {
+                tempBox.pageTurn(num);
+            }
+        },
+
+        changeFocus: function(boxId, index) {
+            var tempBox = this.boxes[this.curBoxId];
+            tempBox.changeFocus(tempBox.curIndex, false);
+            this.curBoxId = boxId;
+            this.boxes[boxId].changeFocus(index, true);
+        },
+
+        volumeUp: function() {
+            this.volumeUpEvent();
+        },
+
+        volumeDown: function() {
+            this.volumeDownEvent();
+        },
+
+        volumeMute: function() {
+            this.volumeMuteEvent();
+        },
+
+        utility: function() {
+            this.utilityEvent();
+        },
+
+        goHomePage: function () {
+            this.goHomePageEvent();
+        }
+    };
+    window.Wrapper = Wrapper;
+}(window));
+(function(window, undefined) {
+    String.prototype.replaceAll = function(s1, s2) {
+        return this.replace(new RegExp(s1, "gm"), s2);
+    };
+    var Util = {
+        changeURLArg: function(url, arg, arg_val) {
+            var pattern = arg + '=([^&]*)';
+            var replaceText = arg + '=' + arg_val;
+            if (url.match(pattern)) {
+                var tmp = '/(' + arg + '=)([^&]*)/gi';
+                tmp = url.replace(eval(tmp), replaceText);
+                return tmp;
+            } else {
+                if (url.match('[\?]')) {
+                    return url + '&' + replaceText;
+                } else {
+                    return url + '?' + replaceText;
+                }
+            }
+            return url + '\n' + arg + '\n' + arg_val;
+        },
+        removeUrlArg: function (url,arg) {
+            var pattern = arg + '=([^&]*)';
+            if(url.match(pattern)){
+                var tmp = '/((|&)' + arg + '=)([^&]*)/g';
+                url = url.replace(eval(tmp),"");
+            }
+            if (url.indexOf('?&') > -1) {
+                return url.replace('?&','?');
+            }
+            return url;
+        },
+        getSliceList: function(lists, curPage, pageSize) {
+            var reclist = [];
+            var start = (curPage - 1) * pageSize;
+            var ll = lists.length;
+            for (var i = 0; i < pageSize && (i + start) < ll; i++) {
+                reclist[i] = lists[start + i];
+            }
+            return reclist;
+        },
+
+        getQueryString: function(name, url) {
+            var _url = url || window.location;
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = _url.search.substr(1).match(reg);
+            if (r !== null) return unescape(r[2]);
+            return null;
+        },
+
+        getUrlString: function(name, url) {
+            var _url = url || window.location;
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = _url.split("?")[1].match(reg);
+            if (r !== null) return unescape(r[2]);
+            return null;
+        },
+
+        getByteLength: function(str) {
+            if (!!str) {
+                if (str.constructor != String) {
+                    str = str.toString();
+                }
+            } else {
+                return 0;
+            }
+            var byteLen = 0,
+                len = str.length;
+            if (str) {
+                for (var i = 0; i < len; i++) {
+                    if (str.charCodeAt(i) > 255) {
+                        byteLen += 2;
+                    } else {
+                        if (str.charCodeAt(i) === 119 || str.charCodeAt(i) === 109 || str.charCodeAt(i) === 87 || str.charCodeAt(i) === 77) {
+                            byteLen += 2;
+                        } else {
+                            byteLen++;
+                        }
+                    }
+                }
+                return byteLen;
+            }
+            return 0;
+        },
+
+        getCutedStr: function(sSource, iLen, dot) {
+            if (!!sSource) {
+                if (sSource.constructor != String) {
+                    sSource = sSource.toString();
+                }
+            } else {
+                return "";
+            }
+            var l = Math.floor(iLen / 2);
+            var str = "";
+            if (l >= sSource.length) {
+                str = sSource;
+            } else {
+                str = sSource.substring(0, l);
+            }
+            if (dot)
+                return str;
+            else
+                return str + "...";
+        },
+
+        completionZero: function(str, zeroStr) {
+            if (typeof str !== "string") {
+                str = str.toString();
+            }
+            return zeroStr.substring(0, zeroStr.length - str.length) + str;
+        },
+
+        isArray: function(obj) {
+            var isArr = Object.prototype.toString.call(obj) === '[object Array]';
+            if (!isArr && obj !== null) {
+                isArr = obj.constructor == Array;
+            }
+            return isArr;
+        },
+
+        isExist: function(obj) {
+            return obj !== null && obj !== undefined && obj !== "" && obj != "null" && obj != "undefined";
+        },
+
+        createIframe: function(id, url) {
+            var tempIframe = document.getElementById(iframeId);
+            if (tempIframe === null) {
+                var eIframe = document.createElement("iframe");
+                eIframe.id = iframeId;
+                eIframe.width = "0px";
+                eIframe.left = "0px";
+                eIframe.style.display = "none";
+                eIframe.src = url;
+                if (document.body !== null) {
+                    document.body.appendChild(eIframe);
+                }
+            } else {
+                tempIframe.src = url;
+            }
+        },
+
+        delIframe: function(id) {
+            var tempObj = document.getElementById(id);
+            document.body.removeChild(tempObj);
+        },
+
+        createSlideEle: function(id, className, speed, parentNode) {
+            var tempEle = eZone.$(id);
+            if (tempEle === null) {
+                tempEle = document.createElement("div");
+                tempEle.id = id;
+                tempEle.className = className;
+                tempEle.style.left = "0px";
+                tempEle.style.top = "0px";
+                tempEle.style.width = "0px";
+                tempEle.style.height = "0px";
+                tempEle.style.display = "none";
+                tempEle.style.transitionDuration = speed;
+                parentNode = parentNode || document.body;
+                if (parentNode !== null) {
+                    parentNode.appendChild(tempEle);
+                }
+            }
+            return tempEle;
+        },
+
+        ajax: function() {
+            var type = arguments[0] || '',
+                url = arguments[1] || '',
+                callBack = arguments[2] || '',
+                params = arguments[3] || '',
+                ref = arguments[4] || '',
+                content,
+                xmlhttp;
+            if (arguments.length === 4) {
+                content = arguments[3] || '';
+            }
+            if (window.XMLHttpRequest) {
+                xmlhttp = new XMLHttpRequest();
+            } else {
+                xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            xmlhttp.onreadystatechange = function() {
+                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                    if (typeof callBack === "function") {
+                        callBack(xmlhttp.responseText, params);
+                    }
+                }
+            };
+            xmlhttp.open(type, url, true);
+            if (type === "GET") {
+                if(ref){
+                    xmlhttp.setRequestHeader("Referer", ref);
+                    $("test").innerHTML = "setreferersuccess----" + ref;
+                }
+                xmlhttp.send();
+                e = new Date();
+            } else if (type === "POST") {
+                xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xmlhttp.send(content);
+            }
+            return xmlhttp.responseText;
+        },
+
+        setCookie: function(key, val) {
+            var Days = 7;
+            var exp = new Date();
+            exp.setTime(exp.getTime() + Days * 24 * 60 * 60 * 1000);
+            document.cookie = key + "=" + escape(val) + ";expires=" + exp.toGMTString() + ";path=/";
+        },
+
+        getCookie: function(key) {
+            var arr = null;
+            if (document.cookie !== null && document.cookie.length > 0) {
+                arr = document.cookie.match(new RegExp("(^| )" + key + "=([^;]*)(;|$)"));
+            }
+            if (arr !== null) {
+                return unescape(arr[2]);
+            }
+            return null;
+        },
+
+        delCookie: function(key) {
+            var date = new Date();
+            date.setTime(date.getTime() - 10000);
+            document.cookie = key + "=;expires=" + date.toGMTString() + ";path=/";
+        },
+
+        animate: function(elem, options) {
+            var requestId;
+            var change = { 'leftstart': null, 'leftend': null, 'topstart': null, 'topend': null };
+
+            if (options.left != undefined && !isNaN(elem.offsetLeft)) {
+                change.leftstart = parseInt(elem.offsetLeft);
+                change.leftend = options.left;
+            }
+            if (options.top != undefined && !isNaN(elem.offsetTop)) {
+                change.topstart = parseInt(elem.offsetTop);
+                change.topend = options.top;
+            }
+
+            var createTime = function() {
+                return (+new Date());
+            };
+            var startTime = createTime();
+
+            function render() {
+                var remaining = Math.max(0, startTime + options.duration - createTime());
+                var temp = remaining / options.duration || 0;
+                var percent = 1 - temp;
+
+                var setAttr = function() {
+                    if (change.leftstart !== null && change.leftend !== null) {
+                        elem.style.left = (change.leftend - change.leftstart) * percent + change.leftstart + 'px';
+                    }
+                    if (change.topstart !== null && change.topend !== null) {
+                        elem.style.top = (change.topend - change.topstart) * percent + change.topstart + 'px';
+                    }
+                };
+                if (percent === 1) {
+                    setAttr();
+                    if (requestId) {
+                        window.cancelAFrame(requestId);
+                    }
+                } else {
+                    setAttr();
+                    requestId = window.requestAFrame(render);
+                }
+            }
+
+            window.requestAFrame = (function() {
+                return window.requestAnimationFrame ||
+                    window.webkitRequestAnimationFrame ||
+                    window.mozRequestAnimationFrame ||
+                    window.oRequestAnimationFrame ||
+                    function(callback) {
+                        return window.setTimeout(callback, 1000 / 60);
+                    };
+            })();
+
+            window.cancelAFrame = (function() {
+                return window.cancelAnimationFrame ||
+                    window.webkitCancelAnimationFrame ||
+                    window.mozCancelAnimationFrame ||
+                    window.oCancelAnimationFrame ||
+                    function(id) {
+                        window.clearTimeout(id);
+                    };
+            })();
+
+            if((change.leftend != undefined && change.leftstart != change.leftend) || (change.topend != undefined && change.topstart != change.topend))
+            requestId = window.requestAFrame(render);
+        }
+    };
+    window.Util = Util;
+}(window));
+(function(window, undefined) {
+    var Control = {
+        grabEvent: function(e) {
+            var _e = e || window.event;
+            var key_code = _e.keyCode || _e.which || _e.charCode;
+            if (Wrapper.keyPressLock) {
+                return;
+            }
+            var KEY_AV_BACK = 283;
+            var KEY_BACK = 8;
+            var KEY_OK = 13;
+            var KEY_PAGEUP = 33;
+            var KEY_PAGEDOWN = 34;
+            var KEY_LEFT = 37;
+            var KEY_UP = 38;
+            var KEY_RIGHT = 39;
+            var KEY_DOWN = 40;
+
+            var KEY_0 = 48;
+            var KEY_1 = 49;
+            var KEY_2 = 50;
+            var KEY_3 = 51;
+            var KEY_4 = 52;
+            var KEY_5 = 53;
+            var KEY_6 = 54;
+            var KEY_7 = 55;
+            var KEY_8 = 56;
+            var KEY_9 = 57;
+
+            var KEY_VOLUP = 259;
+            var KEY_VOLDOWN = 260;
+            var KEY_MUTE = 261;
+
+            var KEY_EVENT = 768;
+            switch (key_code) {
+                case KEY_0:
+                case KEY_1:
+                case KEY_2:
+                case KEY_3:
+                case KEY_4:
+                case KEY_5:
+                case KEY_6:
+                case KEY_7:
+                case KEY_8:
+                case KEY_9:
+                    Wrapper.numType(key_code - KEY_0);
+                    break;
+                case 87:
+                case 119:
+                case KEY_UP:
+                    Wrapper.move(0);
+                    break;
+                case 65:
+                case 97:
+                case KEY_LEFT:
+                    Wrapper.move(1);
+                    break;
+                case 83:
+                case 115:
+                case KEY_DOWN:
+                    Wrapper.move(2);
+                    break;
+                case 68:
+                case 100:
+                case KEY_RIGHT:
+                    Wrapper.move(3);
+                    break;
+                case KEY_OK:
+                    Wrapper.ok();
+                    break;
+                case 32:
+                case KEY_BACK:
+                case KEY_AV_BACK:
+                    Wrapper.goBack();
+                    return 0;
+                    break;
+                case 280:
+                case 287:
+                    Wrapper.del();
+                    break;
+                case KEY_PAGEUP:
+                    Wrapper.pageTurn(-1);
+                    break;
+                case KEY_PAGEDOWN:
+                    Wrapper.pageTurn(1);
+                    break;
+                case KEY_VOLUP:
+                case 79:
+                case 595:
+                    Wrapper.volumeUp();
+                    break;
+                case KEY_VOLDOWN:
+                case 80:
+                case 596:
+                    Wrapper.volumeDown();
+                    break;
+                case KEY_MUTE:
+                case 597:
+                    Wrapper.volumeMute();
+                    break;
+                case KEY_EVENT:
+                    Wrapper.utility();
+                    break;
+                case 513:
+                    Wrapper.goHomePage();
+                    break;
+                default:
+                    Wrapper.defaultKeyEvent(key_code);
+                    break;
+            }
+            
+        },
+
+        bindKeydown: function() {
+            document.onkeydown = this.grabEvent;
+        },
+
+        bindKeypress: function() {
+            document.onkeypress = this.grabEvent;
+        },
+
+        bindIrkeypress: function() {
+            document.onirkeypress = this.grabEvent;
+        },
+
+        bindSystemevent: function() {
+            document.onsystemevent = this.grabEvent;
+        }
+    };
+    window.Control = Control;
+}(window));
+})

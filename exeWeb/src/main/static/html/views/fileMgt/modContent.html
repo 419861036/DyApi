@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>文件编辑</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<link rel="stylesheet"
+	href="/html/layui/css/layui.css" media="all">
+
+	<link rel=stylesheet href="/html/lib/code/doc/docs.css">
+
+	<link rel="stylesheet" href="/html/lib/code/lib/codemirror.css">
+   <link rel="stylesheet" href="/html/lib/code/theme/eclipse.css">
+   <link rel="stylesheet" href="/html/lib/code/addon/fold/foldgutter.css">
+	<link rel="stylesheet" href="/html/lib/code/addon/hint/show-hint.css">
+	<link rel="stylesheet" href="/html/lib/code/addon/dialog/dialog.css">
+	<link rel="stylesheet" href="/html/lib/code/addon/search/matchesonscrollbar.css">
+    
+
+	<style>
+      span {
+      
+          word-spacing: 0px;
+      }
+		.CodeMirror {
+			border-top: 1px solid #888;
+			border-bottom: 1px solid #888;
+			height: 100%;
+		}
+
+		.CodeMirror-scroll {}
+     
+      .CodeMirror-focused .cm-matchhighlight {
+        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFklEQVQI12NgYGBgkKzc8x9CMDAwAAAmhwSbidEoSQAAAABJRU5ErkJggg==);
+        background-position: bottom;
+        background-repeat: repeat-x;
+      }
+      .cm-matchhighlight {background-color: lightgreen}
+      .CodeMirror-selection-highlight-scrollbar {background-color: lightgreen}
+	</style>
+</head>
+
+<body>
+	<div class="layui-form" lay-filter="layuiadmin-app-form-list" id="layuiadmin-app-form-list"
+		style="padding: 20px 30px 0 0;">
+		<div class="layui-form-item" style="z-index: 999;background-color: #ccc">
+			<input type="hidden" name="id" id="id" />
+			<input type="button" lay-submit lay-filter="layuiadmin-app-form-edit" class="layui-btn layui-btn-normal"
+				id="layuiadmin-app-form-edit" value="确认编辑">
+			<label id="path"></label>
+		</div>
+		<div class="layui-form-item" style="margin-top: 50px;">
+			<textarea id="code" name="code" class="layui-textarea">
+			</textarea>
+		</div>
+	</div>
+    <script src="/html/lib/code/lib/codemirror.js"></script>
+    <!-- 搜索-->
+    <script src="/html/lib/code/addon/dialog/dialog.js"></script>
+    <script src="/html/lib/code/addon/search/searchcursor.js"></script>
+    <script src=" /html/lib/code/addon/search/search.js"></script>
+    <script src=" /html/lib/code/addon/scroll/annotatescrollbar.js"></script>
+    <script src="/html/lib/code/addon/search/matchesonscrollbar.js"></script>
+    <script src="/html/lib/code/addon/search/jump-to-line.js"></script>
+    <!-- 折叠-->
+    <script src="/html/lib/code/addon/fold/foldcode.js"></script>
+    <script src="/html/lib/code/addon/fold/foldgutter.js"></script>
+    <script src="/html/lib/code/addon/fold/brace-fold.js"></script>
+    <script src="/html/lib/code/addon/fold/xml-fold.js"></script>
+  
+    <script src="/html/lib/code/addon/hint/show-hint.js"></script>
+    <script src="/html/lib/code/addon/hint/xml-hint.js"></script>
+    <script src="/html/lib/code/addon/hint/html-hint.js"></script>
+    <script src="/html/lib/code/addon/hint/anyword-hint.js"></script>
+    <script src="/html/lib/code/mode/javascript/javascript.js"></script>
+    <script src="/html/lib/code/mode/css/css.js"></script>
+    <script src="/html/lib/code/mode/htmlmixed/htmlmixed.js"></script>
+
+    <script src="/html/lib/code/addon/edit/matchbrackets.js"></script>
+    <script src="/html/lib/code/addon/comment/continuecomment.js"></script>
+    <script src="/html/lib/code/addon/comment/comment.js"></script>
+    <script src="/html/lib/code/addon/selection/active-line.js"></script>
+    <!-- 显示缩进行-->
+    <script src="/html/lib/code/addon/display/rulers.js"></script>
+    <!-- 标签匹配-->
+    <script src="/html/lib/code/addon/edit/matchtags.js"></script>
+    <!-- 匹配高亮-->
+    <script src="/html/lib/code/addon/search/match-highlighter.js"></script>
+    <!-- 代码格式化-->
+    <script src="/html/lib/code/lib/util/formatting.js"></script>
+    
+    <script src="/html/layui/layui.js"></script>
+	<!-- 	<script src="/html/lib/code/mode/xml/xml.js"></script> -->
+
+	<div id="jsCode"></div>
+
+	<script>
+		var editor = null;
+		layui.config({
+			base: '/html/' //静态资源所在路径
+		}).extend({
+			index: 'lib/index' //主入口模块
+		}).use(['index', 'form'], function () {
+			var $ = layui.$, form = layui.form;
+			$(document).keydown(function (e) {
+				//70:F 71:G 72:H 76:L
+				if (e.ctrlKey && e.which == 70 ||
+					e.ctrlKey && e.which == 71 ||
+					e.ctrlKey && e.which == 72 ||
+					e.altKey && e.which == 70||
+             e.ctrlKey && e.which == 76
+				) {
+					e.preventDefault();
+					e.keyCode = false;//加上这一句
+				}
+			});
+			function getQueryVariable(variable) {
+				var query = window.location.search.substring(1);
+				var vars = query.split("&");
+				for (var i = 0; i < vars.length; i++) {
+					var pair = vars[i].split("=");
+					if (pair[0] == variable) {
+						return pair[1];
+					}
+				}
+				return ("");
+			}
+
+
+			var id = getQueryVariable("path");
+			var startLine = getQueryVariable("startLine");
+			var limit = getQueryVariable("limit");
+        var path=decodeURIComponent(id);
+        if(path){
+            var pos=id.lastIndexOf("/");
+            if(pos){
+                var fileName=id.substring(pos+1);
+                document.title=fileName;
+            }
+        }
+        
+			$("#path").html("文件位置：" + decodeURIComponent(id));
+			var mode = "text/html"
+			if (id && id.endsWith(".js")) {
+				mode = "javascript"
+			} else if (id && id.endsWith(".css")) {
+				mode = "text/css"
+			} else {
+				var domScript = document.createElement('script');
+				domScript.src = "/html/lib/code/mode/xml/xml.js";
+				layui.$("#jsCode").append(layui.$(domScript));
+				// 				document.getElementsByTagName('head')[0].appendChild(domScript);
+			}
+        var rulers = [];
+        for (var i = 1; i <= 6; i++) {
+            rulers.push({color:"#fcc", column: i * 4, lineStyle: "dashed"});
+        }
+        
+			editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+                lineNumbers: true,
+                lineWrapping: false,
+                styleActiveLine: true,// 选中行高亮 TODO
+                matchBrackets: true, // 匹配括号
+                indentUnit: 4,//缩进单位，值为空格数，默认为2
+                tabSize:4,//tab字符的宽度
+                indentWithTabs:false,//在缩进时，是否需要把 n*tab宽度个空格替换成n个tab字符，默认为false 。
+                lint: true, // 代码出错提醒
+                mode: mode,
+                smartIndent:false,
+                foldGutter: true,
+                gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+                rulers:rulers,
+                matchTags: {bothTags: true},
+                highlightSelectionMatches: {showToken: /\w/, annotateScrollbar: true},
+				extraKeys: {
+					"Alt-/": "autocomplete",
+					"Ctrl-L": "jumpToLine",
+					"Ctrl-H": "replace",
+					"Ctrl-F": "findPersistent",
+              "Ctrl-I": autoFormatSelection,
+              "Ctrl-S": saveFunction,
+              "Ctrl-/": commentFunction,
+              Tab: (cm) => {
+                if (cm.somethingSelected()) {      // 存在文本选择
+                  cm.indentSelection('add');    // 正向缩进文本
+                  //cm.indentLine(cm.getCursor().line, "add");
+                } else {                    // 无文本选择  
+                  //cm.indentLine(cm.getCursor().line, "add");  // 整行缩进 不符合预期
+                  var indentUnit=cm.getOption("indentUnit")
+                  //cm.replaceSelection(Array(indentUnit + 1).join(" "), "end", "+input");  // 光标处插入 indentUnit 个空格
+                  //cm.replaceSelection(cm.getOption ? "\t" : Array(indentUnit + 1).join("&nbsp;"), "end", "+input");
+                  cm.replaceSelection("    ", "end", "+input");
+                  
+                }   
+              }, 
+              "Shift-Tab": (cm) => {              // 反向缩进   
+                  if (cm.somethingSelected()) {
+                    cm.indentSelection('subtract');  // 反向缩进
+                  } else {
+                    // cm.indentLine(cm.getCursor().line, "subtract");  // 直接缩进整行
+                    const cursor = cm.getCursor();
+                    cm.setCursor({line: cursor.line, ch: cursor.ch - 4});  // 光标回退 indexUnit 字符
+                  }   
+                  return ;
+              }
+
+				}
+				//,value: document.documentElement.innerHTML
+			});
+        function commentFunction(){
+            editor.toggleComment();
+        }
+        function saveFunction(){
+            //TODO 未实现
+            alert("TODO");
+        }
+        //  自动格式化编辑器
+        function autoFormatSelection() {
+            
+            CodeMirror.commands["selectAll"](editor);
+            var range = getSelectedRange();
+            editor.autoFormatRange(range.from, range.to);
+            editor.commentRange(false, range.from, range.to);
+        }
+	    // 获取编辑器中选中范围的的行号
+	    function getSelectedRange() {
+	        return {
+	            from: editor.getCursor(true),
+	            to: editor.getCursor(false)
+	        }
+	    }
+			editor.focus();
+        //editor.foldCode(CodeMirror.Pos(13, 0));
+			$(".CodeMirror-scroll").css("max-height", $(window).height() - 200)
+			if (id) {
+				$("#id").val(id);
+				$.ajax({
+					async: true,
+					"url": "/api/file/get?path=" + id + "&startLine=" + "&limit=" + limit,
+					"global": false,
+					"type": "GET",
+					"dataType": "json",
+					"timeout": "60000",
+					"traditional": true,
+					"success": function (a, b, c) {
+						if (a.v) {
+							editor.setValue(a.v)
+						}
+
+						//parent.layui.table.reload('LAY-app-content-list'); //重载表格
+						//parent.layer.close(index); //再执行关闭 
+					},
+					"error": function (err, msg, code) {
+						return false;
+					}
+				});
+			}
+			layui.form.on("submit(layuiadmin-app-form-edit)", function (i) {
+				add(i);
+			})
+			function add(i) {
+				var field = i.field;
+				field.path = field.id;
+				field.data = editor.getValue();
+				//var index1 = parent.layer.getFrameIndex(window.name);
+
+
+				layui.$.ajax({
+					async: true,
+					"url": "/api/file/save",
+					"global": false,
+					"type": "POST",
+					"contentType": "application/json; charset=utf-8",
+					"dataType": "json",
+					"timeout": "60000",
+					"data": JSON.stringify(field),
+					"traditional": true,
+					"success": function (a, b, c) {
+						layer.msg('修改文件成功！');
+						//parent.layui.table.reload('LAY-app-content-list'); //重载表格
+						//parent.layer.close(index); //再执行关闭 
+					},
+					"error": function (err, msg, code) {
+						return false;
+					}
+				});
+			}
+		})
+	</script>
+</body>
+
+</html>

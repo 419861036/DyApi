@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>资源管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/html/layui/css/layui.css" media="all">
+    <style>
+    .layui-upload-img{width: 92px; height: 92px; margin: 0 10px 10px 0;}
+    .rightmenu{
+    	width: 100px;
+    }
+    .rightmenu li:HOVER {
+		background-color: #ccc;
+	}
+	.rightmenu li{
+		margin-bottom: 5px;
+		margin-top: 5px;
+	}
+    
+     .blank_rightmenu{
+    	width: 100px;
+    }
+    .blank_rightmenu li:HOVER {
+		background-color: #ccc;
+	}
+	.blank_rightmenu li{
+		margin-bottom: 5px;
+		margin-top: 5px;
+	}
+    
+    </style>
+</head>
+
+<body style='padding:10px'>
+    
+   
+    <div class="layui-fluid">
+        <div id="fileManager" lay-filter="test">
+        </div>
+    </div>
+    <ul class="rightmenu" style=" display: none;position: absolute;background: #6E6C79;font-family: '微软雅黑';">
+        <li  style="color: red;cursor:pointer;" data-id="" data-type="preview">
+             <a href="#" id="colcse" style="color: white;cursor:pointer;"    >     预 览  </a>
+        </li>
+        <li  style="color: red;cursor:pointer;" data-id="" data-type="show">
+             <a href="#" id="colcse" style="color: white;cursor:pointer;"    >     查看大文件  </a>
+        </li>
+        <li  style="color: red;cursor:pointer;" data-id="" data-type="package">
+             <a href="#" id="colcse" style="color: white;cursor:pointer;"    >     压缩  </a>
+        </li>
+        <li  style="color: red;cursor:pointer;" data-id="" data-type="unzip">
+             <a href="#" id="colcse" style="color: white;cursor:pointer;"    >     解压  </a>
+        </li>
+        <li  style="color: red;cursor:pointer;" data-id="" data-type="copy">
+             <a href="#" id="colcse" style="color: white;cursor:pointer;"    >     复制  </a>
+        </li>
+        <li  style="color: red;cursor:pointer;" data-id="" data-type="cut">
+             <a href="#" id="colcse" style="color: white;cursor:pointer;"    >     剪切  </a>
+        </li>
+        <li  style="color: red;cursor:pointer;" data-id="" data-type="del">
+             <a href="#" id="colcse" style="color: white;cursor:pointer;"   >     删 除  </a>
+        </li>
+        <li  style="color: red;cursor:pointer;" data-id="" data-type="rename">
+             <a href="#" id="colcse" style="color: white;cursor:pointer;"   >     重 命 名  </a>
+        </li>
+    </ul>
+    <ul class="blank_rightmenu" style=" display: none;position: absolute;background: #6E6C79;font-family: '微软雅黑';">
+        <li  style="color: red;cursor:pointer;" data-id="" data-type="paste">
+             <a href="#" id="colcse" style="color: white;cursor:pointer;"    >     粘贴  </a>
+        </li>
+    </ul>
+</body>
+<script src="/html/layui/layui.js"></script>
+<script>
+    var copy_url=null;
+    var cut_url=null;
+	function getQueryVariable(variable) {
+      var query = window.location.search.substring(1);
+      var vars = query.split("&");
+      for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split("=");
+        if (pair[0] == variable) {
+          return pair[1];
+        }
+      }
+      return (false);
+    }
+    layui.extend({'fileManager': 'ext/fileManager'});
+    layui.use(['fileManager', 'layer', 'upload'], function () {
+        var fileManager = layui.fileManager
+            , $ = layui.$
+            , upload = layui.upload
+            , layer = layui.layer;
+        $('title').html($('title').html() + ' version:' + fileManager.v);
+        var upIns = upload.render({
+            elem: '#test1' //绑定元素
+            , url: 'data.php?action=upload' //上传接口
+            , field: 'file[]'
+        })
+		var currPath = getQueryVariable("currPath");
+		currPath=currPath?currPath:'';
+        fileManager.render({
+            elem: '#fileManager'
+            , method: 'post'
+            , id: 'fmTest'
+            , btn_upload: false
+            , btn_create: true
+            , icon_url: '/html/views/fileMgt/ico/'
+            , url: '/api/file/list?currPath='+currPath
+            , thumb: {'nopic': '/html/views/fileMgt/upload/null-100x100.jpg', 'width': 100, 'height': 100}
+            , parseData: function (res) {
+                /*
+                data:[{
+                    thumb:文件地址用于显示
+                    ,type:文件类型  directory文件夹,png|gif|png|image图片,其它任意
+                    ,path:文件夹路径用于打开本文件夹
+                }]
+                */
+                var rs=res.v
+                var data=[];
+                $.each(rs,function(b,a){
+                	data.push({
+                		name:a.name
+                		,thumb:a.thumb
+                        ,type:a.type
+                        ,path:a.path
+                        ,url:a.url
+                	});
+                });
+//                 var data=[{
+//                 	name:"test"
+//                     ,thumb:"a.txt"
+//                     ,type:"directory"
+//                     ,path:"E://"
+//                 }]
+                let _res =[];
+                _res.code = 0;
+                _res.data = data;
+                _res.count = 10
+                return _res;
+            }
+            , done: function (res, curr, count) {
+                // console.log(res,curr,count)
+            }
+            , page: {limit: 12,layout: ['count', 'prev', 'page', 'next', 'limit', 'refresh', 'skip']}
+            , where: {}
+        });
+        fileManager.on('contextMenu(test)', function (obj) {
+	      var data = obj.data;
+        if($(obj.item).attr("data-type") == "show"){
+          window.open("/html/views/fileMgt/showContent.html?path="+encodeURIComponent(data.path)+"&startLine=0&limit=500")
+        }else if ($(obj.item).attr("data-type") == "package") {
+            var data = obj.data;
+            var path=fileManager.dirRoot[fileManager.dirRoot.length -1]['path']
+            $.ajax({
+                        async : true,
+                        "url" : "/api/file/zip?path="+data.path+"&folder="+data.name,
+                        "global" : false,
+                        "type" : "POST",
+                        "contentType": "application/json; charset=utf-8",
+                        "dataType" : "json",
+                        "timeout" : "60000",
+                        "traditional":true,
+                        "success" : function(a,b,c){
+                            layer.msg('打包成功！');
+                        },
+                        "error" : function(err, msg, code) {
+                            return false;
+                        }
+                    });
+        }else if($(obj.item).attr("data-type") == "unzip"){
+            var data = obj.data;
+            var path=fileManager.dirRoot[fileManager.dirRoot.length -1]['path']
+            $.ajax({
+                        async : true,
+                        "url" : "/api/file/unzip?file="+path+"/"+data.name+"&folder="+path,
+                        "global" : false,
+                        "type" : "POST",
+                        "contentType": "application/json; charset=utf-8",
+                        "dataType" : "json",
+                        "timeout" : "60000",
+                        "traditional":true,
+                        "success" : function(a,b,c){
+                            layer.msg('解压成功！');
+                        },
+                        "error" : function(err, msg, code) {
+                            return false;
+                        }
+                    });
+         }else if($(obj.item).attr("data-type") == "copy"){
+             copy_url=data.path
+             layer.msg('已复制：'+copy_url);
+         }else if($(obj.item).attr("data-type") == "cut"){
+             cut_url=data.path
+             layer.msg('已剪切：'+cut_url);
+         }else if($(obj.item).attr("data-type") == "paste"){
+            // paste
+            var path=fileManager.dirRoot[fileManager.dirRoot.length -1]['path']
+            var url=null;
+            var src=null;
+            if(copy_url ){
+                url="/api/file/copy";
+                src=copy_url;
+            }
+            if(cut_url ){
+                url="/api/file/mv";
+                src=cut_url;
+            }
+            //cut_url
+            if(!url){
+                layer.msg('请先复制、或剪切');
+                return;
+            }
+            layer.msg('paste：'+copy_url+"---"+path);
+            $.ajax({
+                async : true,
+                "url" : url+"?file="+src+"&folder="+path,
+                "global" : false,
+                "type" : "POST",
+                "contentType": "application/json; charset=utf-8",
+                "dataType" : "json",
+                "timeout" : "60000",
+                "traditional":true,
+                "success" : function(a,b,c){
+                    layer.msg('操作成功！');
+                },
+                "error" : function(err, msg, code) {
+                    return false;
+                }
+            });
+         }else if ($(obj.item).attr("data-type") == "preview") {
+	    	  window.open(data.url)
+	      }else if($(obj.item).attr("data-type") == "del"){
+	    	  layer.confirm("确定删除:"+data.path+"?", function(e) {
+               $.ajax({
+                			async : true,
+                			"url" : "/api/file/del?path="+data.path,
+                			"global" : false,
+                			"type" : "POST",
+                			"contentType": "application/json; charset=utf-8",
+                			"dataType" : "json",
+                			"timeout" : "60000",
+                			"traditional":true,
+                			"success" : function(a,b,c){
+                				layer.msg('删除成功！');
+                				//parent.layui.table.reload('LAY-app-content-list'); //重载表格
+                          fileManager.reload('fmTest');
+                	      	 layer.close(e)
+                			},
+                			"error" : function(err, msg, code) {
+                				return false;
+                			}
+                		});
+               
+            }) 
+	      }else if($(obj.item).attr("data-type") == "rename"){
+           var data = obj.data;
+          var path=fileManager.dirRoot[fileManager.dirRoot.length -1]['path']
+	    	  layer.prompt({ title: '请输入新名称', formType: 0 }, function(name, index) {
+                $.ajax({
+                			async : true,
+                			"url" : "/api/file/rename?path="+data.path+"&dest="+path+"/"+name,
+                			"global" : false,
+                			"type" : "POST",
+                			"contentType": "application/json; charset=utf-8",
+                			"dataType" : "json",
+                			"timeout" : "60000",
+                			"traditional":true,
+                			"success" : function(a,b,c){
+                				layer.msg('修改成功！');
+                          fileManager.reload('fmTest');
+                	      	 layer.close(index)
+                			},
+                			"error" : function(err, msg, code) {
+                				return false;
+                			}
+                		});
+            });
+	      }
+        });
+        //监听图片选择事件
+        fileManager.on('pic(test)', function (obj) {
+            var data = obj.data;
+            var path=encodeURI(data.path)
+            if(top.window===window){
+            	window.open('/html/views/fileMgt/modContent.html?path='+path);
+            }else{
+	        	top.layui.admin.events.newTab('/html/views/fileMgt/modContent.html?path='+path,data.name)
+            }
+//         	layer.open({
+//                 type: 2
+//                 ,title: '编辑文件'+data.path
+//                 ,content: '/html/views/fileMgt/modContent.html?path='+data.path
+//                 ,maxmin: true
+//                 ,area: ['550px', '550px']
+//                 ,btn: ['确定', '取消']
+//                 ,yes: function(index, layero){
+                	
+//                 	window["layui-layer-iframe" + index].document.getElementById("code")
+//                     var l = window["layui-layer-iframe" + index]
+//                       , a = layero.find("iframe").contents().find("#layuiadmin-app-form-edit");
+//                     l.layui.form.on("submit(layuiadmin-app-form-edit)", function(i) {
+                    	
+//                         var field = i.field;
+//                         field.path=field.id;
+//                         field.data=l.editor.getValue();
+//                         var index1 = parent.layer.getFrameIndex(window.name);
+//                         l.layui.$.ajax({
+//                 			async : true,
+//                 			"url" : "/api/file/save",
+//                 			"global" : false,
+//                 			"type" : "POST",
+//                 			"contentType": "application/json; charset=utf-8",
+//                 			"dataType" : "json",
+//                 			"timeout" : "60000",
+//                 			"data" : JSON.stringify(field),
+//                 			"traditional":true,
+//                 			"success" : function(a,b,c){
+//                 				layer.msg('修改成功！');
+//                 				//parent.layui.table.reload('LAY-app-content-list'); //重载表格
+//                 	      		parent.layer.close(index); //再执行关闭 
+//                 			},
+//                 			"error" : function(err, msg, code) {
+//                 				return false;
+//                 			}
+//                 		});
+//                     }),
+//                     a.trigger("click")
+//                   //点击确认触发 iframe 内容中的按钮提交
+// //                   var submit = layero.find('iframe').contents().find("#layuiadmin-app-form-submit");
+// //                   submit.click();
+//                 }
+//               }); 
+            //obj.obj 当前对象
+            //obj.data 当前图片数据
+//             var data = obj.data;
+//             layer.alert(JSON.stringify(data), {
+//                 title: '当前数据：'
+//             });
+        });
+        //监听图片上传事件
+        fileManager.on('uploadfile(test)', function (obj) {
+            //obj.obj 当前对象
+            //obj.path 路径
+            //更改上传组件参数
+            upIns.config.data = {'path': obj.path};
+            upIns.config.done = function (res) {
+                fileManager.reload('fmTest');
+            }
+            var e = document.createEvent("MouseEvents");
+            e.initEvent("click", true, true);
+            document.getElementById("test1").dispatchEvent(e)
+        });
+        //监听新建文件夹事件
+        fileManager.on('new_dir(test)', function (obj) {
+            //obj.obj 当前对象
+            //obj.folder 文件夹名称
+            //obj.path 路径
+            $.post('/api/file/mkdir', {'folder': obj.folder, 'path': obj.path}, function (e) {
+           		 e = JSON.parse(e);
+                layer.msg(e.msg);
+                if (e.code == 200) {
+                    fileManager.reload('fmTest');
+                }
+            })
+        });
+        //监听新建文件事件
+        fileManager.on('new_file(test)', function (obj) {
+            //obj.obj 当前对象
+            //obj.file 文件名称
+            //obj.path 路径
+            $.post('/api/file/newfile', { 'path': obj.path+"/"+obj.file}, function (e) {
+           		 e = JSON.parse(e);
+                layer.msg(e.msg);
+                if (e.code == 200) {
+                    fileManager.reload('fmTest');
+                }
+            })
+        });
+        //弹层选择
+        $(document).on('click','.picview',function(res){
+            let name = $(this).data('name');
+            layui.data('_fm', {key: '_picview_name',value: name});
+            layer.open({
+                type:2
+                , area: ['620px', '600px']
+                ,content: ['pop.html', 'no']
+            })
+        });
+        //弹层选择后的回调
+        window.callback = function(res){
+            let name = layui.data('_fm')._picview_name;
+            $('.picview[data-name='+name+']').find('img').attr('src',res.thumb)
+            $('.picview[data-name='+name+']').find('p').text(res.name);
+            layui.data('_fm',null);
+        }
+    });
+</script>
+
+</html>

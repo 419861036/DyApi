@@ -1,0 +1,21 @@
+
+挽留页：
+/html/views/iptv/SC/CQCA/page/index.html
+http://www.yunmi.ren/html/views/iptv/SC/CQCA/page/index.html
+挽留页demo
+/html/views/iptv/GameEpg/page/child_play_index1.html
+亲子游戏
+child_play_index.html
+    挽留页
+    /GameEpg/page/child_play_detail.html
+竞技视频
+compete_play_index.html
+精品游戏
+quality_play_index.html
+    挽留页
+    /GameEpg/page/child_play_detail.html
+专题页：
+special开头
+/html/views/iptv/SC/CQCA/page/special_civilization.html
+
+

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>cmd工具</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" href="/html/layui/css/layui.css" media="all">
+  <link rel=stylesheet href="/html/lib/code/doc/docs.css">
+<link rel="stylesheet" href="/html/lib/code/lib/codemirror.css">
+<link rel="stylesheet" href="/html/lib/code/addon/hint/show-hint.css">
+  <style >
+  .layui-form-item .layui-input-inline {
+    width:500px;
+    }
+     .layui-textarea {
+    	height:200px;
+    }
+    .CodeMirror {
+	border-top: 1px solid #888;
+	border-bottom: 1px solid #888;
+	height: 100%;
+}
+  </style>
+</head>
+<body>
+
+  <div class="layui-form" lay-filter="layuiadmin-app-form-list" id="layuiadmin-app-form-list" style="padding: 20px 30px 0 0;">
+    <div class="layui-form-item">
+      <label class="layui-form-label">资源名称</label>
+      <div class="layui-input-inline">
+      <label class="layui-form-label" name="resourceName" id="resourceName" style="width:90%;"></label>
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">请求URL</label>
+      <div class="layui-input-inline">
+      	<input type="text" name="path" id="path" lay-verify="required" placeholder="请输入请求URL" class="layui-input">
+      </div>
+    </div>
+     <div class="layui-form-item">
+      <label class="layui-form-label">请求类型</label>
+      <div class="layui-input-inline">
+      	<div name="type" id="type"></div>
+      </div>
+    </div>
+     <div class="layui-form-item">
+      <label class="layui-form-label">header</label>
+      <div class="layui-input-inline">
+        <textarea  name="header" id="header"  placeholder="请输入header" autocomplete="off" class="layui-input"></textarea>
+      </div>
+    </div>
+     <div class="layui-form-item">
+      <label class="layui-form-label">post参数</label>
+      <div class="layui-input-inline">
+        <textarea  name="data" id="data"  placeholder="请输入post参数" style="height:200px;" autocomplete="off" class="layui-input"></textarea>
+      </div>
+    </div>
+    <div class="layui-form-item ">
+      <label class="layui-form-label">请求类型</label>
+      <div class="layui-input-inline">
+      	<div name="headerType" id="headerType"></div>
+      </div>
+    </div>
+    <div class="layui-form-item ">
+      <label class="layui-form-label"></label>
+      <div class="layui-input-inline" style="text-align:right;" >
+       <input type="button" lay-submit lay-filter="layuiadmin-app-form-reload" id="layuiadmin-app-form-reload" value="reload" class="layui-btn layui-btn-reload">
+      	<input type="button" lay-submit lay-filter="layuiadmin-app-form-submit" id="layuiadmin-app-form-submit" value="send" class="layui-btn layui-btn-normal">
+      </div>
+      
+    </div>
+    <div class="layui-form-item ">
+      <label class="layui-form-label">请求结果</label>
+      <div class="layui-input-inline">
+      	<textarea  name="result" id="result" style="height:200px;"  placeholder="请输入post参数" autocomplete="off" class="layui-input"></textarea>
+      </div>
+    </div>
+    <div class="layui-form-item ">
+      <label class="layui-form-label">请求定义</label>
+      <div class="layui-input-inline">
+      	<textarea  name="config" id="config" style="height:200px;"  placeholder="请输入请求定义" autocomplete="off" class="layui-input"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <script src="/html/layui/layui.js"></script>  
+  <script src="/html/lib/xmselect/xm-select.js"></script>  
+  <script src="/html/lib/mock/mock.js"></script> 
+  <script src="/html/lib/code/lib/codemirror.js"></script>
+	<script src="/html/lib/code/addon/hint/show-hint.js"></script>
+	<script src="/html/lib/code/addon/hint/xml-hint.js"></script>
+	<script src="/html/lib/code/addon/hint/html-hint.js"></script>
+	<script src="/html/lib/code/mode/xml/xml.js"></script>
+	<script src="/html/lib/code/mode/javascript/javascript.js"></script>
+  <script>
+  layui.config({
+    base: '/html/' //静态资源所在路径
+  }).extend({
+    index: 'lib/index' //主入口模块
+  }).use(['index', 'form'], function(){
+    var $ = layui.$
+    ,form = layui.form;
+    var dataEditor =null
+    var resultEditor=null
+    var selType = xmSelect.render({
+    	el: '#type', 
+    	name:'type',
+    	radio: true,
+    	clickClose: true,
+    	model: {
+    		icon: 'hidden',
+    		label: {
+    			type: 'text'
+    		}
+    	},
+    	toolbar:{
+    		show: false,
+    	},
+    	data: [
+    		{name: 'get', value: "get"},
+    		{name: 'post', value: "post",selected:true},
+    		{name: 'put', value: "put"}
+    	]
+    })
+    var headerType = xmSelect.render({
+    	el: '#headerType', 
+    	name:'headerType',
+    	radio: true,
+    	clickClose: true,
+    	model: {
+    		icon: 'hidden',
+    		label: {
+    			type: 'text'
+    		}
+    	},
+    	toolbar:{
+    		show: false,
+    	},
+    	data: [
+    		{name: 'application/xml', value: "application/xml"},
+    		{name: 'application/json', value: "application/json"},
+    		{name: 'multipart/form-data; boundary=FormBoundary', value: "multipart/form-data; boundary=FormBoundary"},
+         {name: 'application/x-www-form-urlencoded', value: "application/x-www-form-urlencoded"}
+          
+    	]
+    })
+    var mode="text/html"
+    var configEditor =CodeMirror.fromTextArea(document.getElementById("config"), {
+             lineNumbers : true,
+             lineWrapping : true,
+             mode : mode,
+             extraKeys : {
+               "Alt-/" : "autocomplete"
+             }
+             //,value: document.documentElement.innerHTML
+           });
+           
+    
+    function getQueryVariable(variable) {
+		var query = window.location.search.substring(1);
+		var vars = query.split("&");
+		for (var i = 0; i < vars.length; i++) {
+			var pair = vars[i].split("=");
+			if (pair[0] == variable) {
+				return pair[1];
+			}
+		}
+		return ("");
+	}
+//     selAppId.
+	var id = getQueryVariable("id");
+   var result=null;
+	if(id){
+		$.ajax({
+			async : true,
+			"url" : "/api/resource/get?id="+id,
+			"global" : false,
+			"type" : "GET",
+			"contentType": "application/json; charset=utf-8",
+			"dataType" : "json",
+			"timeout" : "60000",
+			"traditional":true,
+			"success" : function(a,b,c){
+           result=a
+				load(a)
+			},
+			"error" : function(err, msg, code) {
+				return false;
+			}
+		});
+	}
+    
+    function getMockData(mock){
+      var testData="";
+      if(mock){
+        var mockObj=null;
+        try{
+          var mockObj=JSON.parse(mock);
+        }catch(err){
+          mockObj=mock
+        }
+        testData=Mock.mock(mockObj)
+        if(typeof(testData)=='string'){
+        }else if(typeof(testData)=='number'){
+        }else if(testData.data){
+          testData=Mock.mock(mockObj).data
+        }
+      }
+      return testData
+    }
+	function load(a){
+    if(a.v){
+      var data=a.v[0]
+      var appId=data.appId;
+      //selType.setValue([data.type])
+      $("#id").val(data.id)
+      $("#path").val("/api"+data.path)
+      $("#resourceName").html(data.resourceName)
+      //$("#config").html(data.config)
+      configEditor.setValue(data.config)
+      var parser=new DOMParser();
+      var xmlDoc=parser.parseFromString(data.config,"text/xml");
+      var segs=xmlDoc.children[0].getElementsByTagName("seg")
+      var body1="";
+      var bodyJson={};
+      var headerTypeStr=null;
+      if(headerType.getValue().length>0){
+        headerTypeStr=headerType.getValue()[0].value
+      }
+      for (var i = 0; i < segs.length; i++) {
+        var seg=segs[i];
+        var beans=seg.getElementsByTagName("bean");
+        if(beans.length>0){
+          headerType.setValue([{ name:"application/json",value: "application/json"}])
+          headerTypeStr="application/json"
+        }else if(headerTypeStr==null){
+          headerTypeStr="application/x-www-form-urlencoded"
+          headerType.setValue([{ name:"application/x-www-form-urlencoded",value: "application/x-www-form-urlencoded"}])
+        }
+        var params=seg.getElementsByTagName("param");
+        for (var j = 0; j < params.length; j++) {
+          var param=params[j];
+          if(param){
+            var key=param.getAttribute("key");
+            var mock=param.getAttribute("mock");
+            var testData=getMockData(mock);
+            if("application/json"==headerTypeStr){
+              bodyJson[key]=testData
+            }else{
+              body1=body1+"&"+key+"="+testData;
+            }
+          }
+        }
+        //通过bean定义 生成 字段及规则
+        for (var j = 0; j < beans.length; j++) {
+          //如果存在bean 
+          var bean=beans[j];
+          if(bean){
+            var fields=bean.children;
+            //字段
+            for (var k = 0; k < fields.length; k++) {
+              var field=fields[k];
+              var key=field.getAttribute("key");
+              var mock=field.getAttribute("mock");
+              var testData=getMockData(mock);
+              if("application/json"==headerTypeStr){
+                bodyJson[key]=testData
+              }else{
+                body1=body1+"&"+key+"="+testData;
+              }
+            }
+
+          }
+        }
+      }
+      if("application/json"==headerTypeStr){
+         var mode={name: "javascript", json: true}
+         if(!dataEditor){
+           dataEditor =CodeMirror.fromTextArea(document.getElementById("data"), {
+             lineNumbers : true,
+             lineWrapping : true,
+             mode : mode,
+             extraKeys : {
+               "Alt-/" : "autocomplete"
+             }
+             //,value: document.documentElement.innerHTML
+           });
+         }
+         
+        dataEditor.setValue(JSON.stringify(bodyJson,null,2))
+        //layui.$("#data").val(JSON.stringify(bodyJson));
+      }else{
+        layui.$("#data").val(body1);
+      }  
+    }
+    
+    }
+   form.on('submit(layuiadmin-app-form-reload)', function(data){
+  		load(result)
+	})
+    //监听提交
+    form.on('submit(layuiadmin-app-form-submit)', function(data){
+      if(resultEditor){
+      	resultEditor.setValue("")
+      }
+      var field = data.field; //获取提交的字段
+      var data=null
+      if(dataEditor){
+        data=dataEditor.getValue()
+       }else{
+      	  data=field.data
+       }
+      
+      if(data){
+        if("application/json"==headerType.getValue()[0].value){
+         data=JSON.parse(data) 
+        data=JSON.stringify(data)
+        }
+        
+      }
+      
+      //header
+		$.ajax({
+			async : true,
+			"url" : field.path,
+			"global" : false,
+			"type" : field.type,
+			"contentType": field.headerType,
+			"dataType" : "json",
+			"timeout" : "60000",
+			"data" : data,
+			"traditional":true,
+			"success" : function(a,b,c){
+           var data=JSON.stringify(a,null,2);
+           var mode={name: "javascript", json: true}
+           if(!resultEditor){
+               resultEditor =CodeMirror.fromTextArea(document.getElementById("result"), {
+               lineNumbers : true,
+               lineWrapping : true,
+               mode : mode,
+               extraKeys : {
+                 "Alt-/" : "autocomplete"
+               }
+               //,value: document.documentElement.innerHTML
+             });
+           }
+          
+           resultEditor.setValue(data)
+				//$("#result").val(data)
+			},
+			"error" : function(err, msg, code) {
+				return false;
+			}
+		});
+      //提交 Ajax 成功后，关闭当前弹层并重载表格
+      //$.ajax({});
+      
+    });
+  })
+  </script>
+</body>
+</html>
+			
