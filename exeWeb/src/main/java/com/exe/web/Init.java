@@ -16,15 +16,17 @@ public class Init {
             List<ExeResourceVo> list=initData();
             CmdHandle.clearCmd();
             for (ExeResourceVo exeResourceVo : list) {
+                String shortCmd=null;
                 try{
                     String path=exeResourceVo.getPath();
                     String config=exeResourceVo.getCaiConfig();
                     int pos=path.indexOf(".java");
-                    String shortCmd=path.substring(0, pos);
+                    shortCmd=path.substring(0, pos);
                     Class cmd = GroovyUtil.getCmd(config);
                     System.out.println("init:"+shortCmd);
                     CmdHandle.register(shortCmd, cmd);
                 }catch(Exception e){
+                    System.out.println("init fail:"+shortCmd);
                     e.printStackTrace();
                 }
             }

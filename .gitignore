@@ -1,1 +1,4 @@
 exeWeb/src/main/lib/tools.jar
+*/target/*
+*.iml
+.idea
