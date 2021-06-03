@@ -3,4 +3,4 @@ exeWeb/src/main/lib/tools.jar
 *.iml
 .idea
 bfg-1.14.0.jar
-exeWeb/src/main/conf/dbcp.properties
+#exeWeb/src/main/conf/dbcp.properties

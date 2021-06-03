@@ -1,0 +1,15 @@
+INSERT INTO `exe_app` (`id`, `appName`, `contextPath`, `createTime`, `upTime`) VALUES (1, '应用管理', '/app', '2020-10-22 09:13:10', '2020-10-22 09:13:12');
+INSERT INTO `exe_app` (`id`, `appName`, `contextPath`, `createTime`, `upTime`) VALUES (2, '虚拟资源管理', '/resource', '2020-10-26 17:37:01', NULL);
+INSERT INTO `exe_app` (`id`, `appName`, `contextPath`, `createTime`, `upTime`) VALUES (3, '采集', '/cai', '2020-10-22 09:13:10', '2021-1-15 19:31:02');
+INSERT INTO `exe_app` (`id`, `appName`, `contextPath`, `createTime`, `upTime`) VALUES (4, '文件管理', '/file', '2020-10-27 09:30:38', '2020-10-27 09:30:41');
+INSERT INTO `exe_app` (`id`, `appName`, `contextPath`, `createTime`, `upTime`) VALUES (30, 'test1', 'test1', '2020-10-27 15:04:44', NULL);
+INSERT INTO `exe_app` (`id`, `appName`, `contextPath`, `createTime`, `upTime`) VALUES (32, '收藏夹', '/scj', '2020-11-9 14:51:03', NULL);
+INSERT INTO `exe_app` (`id`, `appName`, `contextPath`, `createTime`, `upTime`) VALUES (35, 'api管理', '/apimgt', '2020-11-18 15:45:40', NULL);
+INSERT INTO `exe_app` (`id`, `appName`, `contextPath`, `createTime`, `upTime`) VALUES (43, '数据库管理', '/db', '2020-11-23 20:31:52', NULL);
+INSERT INTO `exe_app` (`id`, `appName`, `contextPath`, `createTime`, `upTime`) VALUES (47, '用户管理', '/user', '2020-11-24 20:59:34', NULL);
+INSERT INTO `exe_app` (`id`, `appName`, `contextPath`, `createTime`, `upTime`) VALUES (48, '角色管理', '/role', '2020-11-25 10:10:56', NULL);
+INSERT INTO `exe_app` (`id`, `appName`, `contextPath`, `createTime`, `upTime`) VALUES (49, '菜单', '/menu', '2020-12-30 17:16:12', NULL);
+INSERT INTO `exe_app` (`id`, `appName`, `contextPath`, `createTime`, `upTime`) VALUES (50, '任务管理', 'task', '2021-1-17 11:12:12', NULL);
+INSERT INTO `exe_app` (`id`, `appName`, `contextPath`, `createTime`, `upTime`) VALUES (51, 'IPTV', '/iptv', '2021-1-18 13:38:26', NULL);
+INSERT INTO `exe_app` (`id`, `appName`, `contextPath`, `createTime`, `upTime`) VALUES (52, 'debug', '/debug', '2021-2-2 13:25:09', NULL);
+INSERT INTO `exe_app` (`id`, `appName`, `contextPath`, `createTime`, `upTime`) VALUES (53, 'CMS内容管理', '/cms', '2021-4-29 10:12:20', NULL);
