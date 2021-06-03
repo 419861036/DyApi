@@ -34,7 +34,7 @@
      <div class="layui-form-item">
       <label class="layui-form-label">描述</label>
       <div class="layui-input-inline">
-        <textarea name="remark" placeholder="请输入描述" class="layui-textarea"></textarea>
+        <textarea name="remark" id="remark" placeholder="请输入描述" class="layui-textarea"></textarea>
       </div>
     </div>
     <div class="layui-form-item">
@@ -146,7 +146,7 @@
                     if(data.private && data.private=='on'){
                         $("#private").attr("checked",true);
                     }
-                    
+                    console.log(data.remark)
 					$("#remark").val(data.remark)
                   $("#link").val(data.link)
                   form.render();

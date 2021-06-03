@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>api测试-原生方式</title>
+    <script src="./EPGUtils.js"></script>
+    <script>
+<!--        var opt={url:"http://118.123.189.251:28080/epgs/category/detail?categorycodes=100990000000000019838045"};-->
+<!--        EPGUtil.ajax(opt);-->
+    </script>
+</head>
+<body>
+    请求地址:<input type="text" id="url"/><br/>
+    请求类型：<input type="text" id="method" value="GET/POST"/><br/>
+    请求数据：<input type="text" id="data"/><br/>
+    <input type="button" id="btn" value="提交"/><br/>
+    成功结果：<textarea id="success" cols="50" rows="10"></textarea><br/>
+    失败结果:<textarea id="error" cols="50" ></textarea><br/>
+    <script type="text/javascript">
+        var btn=document.getElementById("btn");
+        btn.onclick=function(){
+            var url=document.getElementById("url").value;
+            var method=document.getElementById("method").value;
+            var data=document.getElementById("data").value;
+            var success=document.getElementById("success");
+            var error=document.getElementById("error");
+            var opt={
+                url:url,
+                data:data,
+                method:method,
+                success:function(data){
+                    success.innerText=JSON.stringify(data);
+                },error:function(data1){
+                    error.innerText=JSON.stringify(data);
+                }
+            }
+            EPGUtil.ajax(opt);
+        }
+    </script>
+</body>
+</html>

@@ -102,6 +102,7 @@
 			
 			var $ = layui.$, form = layui.form;
 			var id = getQueryVariable("path");
+            var absPath = getQueryVariable("absPath");
 			var startLine = getQueryVariable("startLine");
 			var limit = getQueryVariable("limit");
         
@@ -136,7 +137,7 @@
 				$("#id").val(id);
 				$.ajax({
 					async : true,
-					"url" : "/api/file/get?path=" + id+"&startLine="+startLine+"&limit="+limit,
+					"url" : "/api/file/get?path=" + id+"&startLine="+startLine+"&limit="+limit+"&absPath="+absPath,
 					"global" : false,
 					"type" : "GET",
 					"dataType" : "json",

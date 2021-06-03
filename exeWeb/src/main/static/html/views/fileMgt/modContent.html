@@ -132,6 +132,7 @@
 
 
 			var id = getQueryVariable("path");
+            var absPath = getQueryVariable("absPath");
 			var startLine = getQueryVariable("startLine");
 			var limit = getQueryVariable("limit");
         var path=decodeURIComponent(id);
@@ -240,7 +241,7 @@
 				$("#id").val(id);
 				$.ajax({
 					async: true,
-					"url": "/api/file/get?path=" + id + "&startLine=" + "&limit=" + limit,
+					"url": "/api/file/get?path=" + id + "&startLine=" + "&limit=" + limit+"&absPath="+absPath,
 					"global": false,
 					"type": "GET",
 					"dataType": "json",
@@ -265,6 +266,7 @@
 			function add(i) {
 				var field = i.field;
 				field.path = field.id;
+                field.absPath = absPath;
 				field.data = editor.getValue();
 				//var index1 = parent.layer.getFrameIndex(window.name);
 

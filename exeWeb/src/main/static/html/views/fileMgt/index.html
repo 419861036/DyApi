@@ -103,6 +103,8 @@
         })
 		var currPath = getQueryVariable("currPath");
 		currPath=currPath?currPath:'';
+        var absPath = getQueryVariable("absPath");
+		absPath=absPath?absPath:'';
         fileManager.render({
             elem: '#fileManager'
             , method: 'post'
@@ -110,7 +112,7 @@
             , btn_upload: false
             , btn_create: true
             , icon_url: '/html/views/fileMgt/ico/'
-            , url: '/api/file/list?currPath='+currPath
+            , url: '/api/file/list?currPath='+currPath+"&absPath="+absPath
             , thumb: {'nopic': '/html/views/fileMgt/upload/null-100x100.jpg', 'width': 100, 'height': 100}
             , parseData: function (res) {
                 /*
@@ -152,7 +154,7 @@
         fileManager.on('contextMenu(test)', function (obj) {
 	      var data = obj.data;
         if($(obj.item).attr("data-type") == "show"){
-          window.open("/html/views/fileMgt/showContent.html?path="+encodeURIComponent(data.path)+"&startLine=0&limit=500")
+          window.open("/html/views/fileMgt/showContent.html?path="+encodeURIComponent(data.path)+"&absPath="+encodeURIComponent(absPath)+"&startLine=0&limit=500")
         }else if ($(obj.item).attr("data-type") == "package") {
             var data = obj.data;
             var path=fileManager.dirRoot[fileManager.dirRoot.length -1]['path']
@@ -287,9 +289,9 @@
             var data = obj.data;
             var path=encodeURI(data.path)
             if(top.window===window){
-            	window.open('/html/views/fileMgt/modContent.html?path='+path);
+            	window.open('/html/views/fileMgt/modContent.html?path='+path+'&absPath='+encodeURIComponent(absPath));
             }else{
-	        	top.layui.admin.events.newTab('/html/views/fileMgt/modContent.html?path='+path,data.name)
+	        	top.layui.admin.events.newTab('/html/views/fileMgt/modContent.html?path='+path+'&absPath='+absPath,data.name)
             }
 //         	layer.open({
 //                 type: 2

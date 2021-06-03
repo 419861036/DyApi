@@ -238,7 +238,12 @@
 	<dl class="layui-nav-child">
     {{#  layui.each(item.children, function(index, children){ }}
 	  <dd class="layui-nav-itemed">
-		<a lay-href="{{ children.url }}">{{ children.name }}</a>
+        {{#  if(children.url){ }}
+		    <a lay-href="{{ children.url }}">{{ children.name }}</a>
+        {{# } }}
+        {{#  if(!children.url){ }}
+            <a >{{ children.name }}</a>
+        {{# } }}
         {{#  layui.each(children.children, function(index, children2){ }}
 		<dl class="layui-nav-child">
 		      <dd><a lay-href="{{ children2.url }}">{{ children2.name }}</a></dd>
