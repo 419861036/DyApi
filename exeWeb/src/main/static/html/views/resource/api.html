@@ -59,6 +59,27 @@
         <textarea  name="data" id="data"  placeholder="请输入post参数" style="height:200px;" autocomplete="off" class="layui-input"></textarea>
       </div>
     </div>
+    <div class="layui-form-item">
+      <div class="layui-input-inline">
+        <label class="layui-form-label">post参数</label>
+        <div class="layui-input-inline" style="width: 100px;">
+          <input type="text" id="key0" placeholder="post key" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-form-mid">:</div>
+        <div class="layui-input-inline" style="width: 100px;">
+          <textarea id="value0" placeholder="post value" autocomplete="off" class="layui-input"></textarea>
+        </div>
+        <div class="layui-input-inline" style="width: 50px;">
+          <input type="button" lay-submit lay-filter="layuiadmin-app-form-add" id="layuiadmin-app-form-add" value="add" class="layui-btn layui-btn-normal">
+        </div>
+      </div>
+    </div>
+    <div id="postItem">
+
+
+    </div>
+
+
     <div class="layui-form-item ">
       <label class="layui-form-label">请求类型</label>
       <div class="layui-input-inline">
@@ -96,12 +117,26 @@
 	<script src="/html/lib/code/addon/hint/html-hint.js"></script>
 	<script src="/html/lib/code/mode/xml/xml.js"></script>
 	<script src="/html/lib/code/mode/javascript/javascript.js"></script>
+<script id="postTpl" type="text/html">
+  <div class="layui-form-item ">
+    <div class="layui-input-inline">
+      <label class="layui-form-label">post参数</label>
+      <div class="layui-input-inline" style="width: 100px;">
+        <input type="text" id="key{{d.index}}" placeholder="post key" autocomplete="off" class="layui-input">
+      </div>
+      <div class="layui-form-mid">:</div>
+        <div class="layui-input-inline" style="width: 100px;">
+          <textarea id="value{{d.index}}" placeholder="post value" autocomplete="off" class="layui-input"></textarea>
+        </div>
+    </div>
+  </div>
+</script>
   <script>
   layui.config({
     base: '/html/' //静态资源所在路径
   }).extend({
     index: 'lib/index' //主入口模块
-  }).use(['index', 'form'], function(){
+  }).use(['index', 'form','laytpl'], function(){
     var $ = layui.$
     ,form = layui.form;
     var dataEditor =null
@@ -299,6 +334,17 @@
     }
     
     }
+    index=1;
+    form.on('submit(layuiadmin-app-form-add)', function(data){
+       var tpl=postTpl.innerHTML;
+       var data={index:index++};
+      layui.laytpl(tpl).render(data, function(html){
+        $("#postItem").append(html);
+      });
+
+
+
+    })
    form.on('submit(layuiadmin-app-form-reload)', function(data){
   		load(result)
 	})
@@ -308,6 +354,9 @@
       	resultEditor.setValue("")
       }
       var field = data.field; //获取提交的字段
+
+      var key=field.key;
+      var val=field.value;
       var data=null
       if(dataEditor){
         data=dataEditor.getValue()
@@ -317,10 +366,26 @@
       
       if(data){
         if("application/json"==headerType.getValue()[0].value){
-         data=JSON.parse(data) 
-        data=JSON.stringify(data)
+         data=JSON.parse(data);
+         data=JSON.stringify(data)
+        }else{
+          for(var i=0;i<index;i++){
+            if(layui.$("#key"+i).val()){
+              data=data+"&"+layui.$("#key"+i).val()+"="+encodeURIComponent(layui.$("#value"+i).val());
+            }
+          }
         }
-        
+      }else{
+        if("application/json"==headerType.getValue()[0].value){
+
+        }else{
+          for(var i=0;i<index;i++){
+            if(layui.$("#key"+i).val()){
+              data=data+"&"+layui.$("#key"+i).val()+"="+encodeURIComponent(layui.$("#value"+i).val());
+            }
+          }
+        }
+
       }
       
       //header

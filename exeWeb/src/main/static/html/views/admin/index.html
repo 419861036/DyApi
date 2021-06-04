@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>数据开发平台 </title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/html/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/html/style/admin.css" media="all">
+    <script>
+        /^http(s*):\/\//.test(location.href) || alert('请先部署到 localhost 下再访问');
+    </script>
+</head>
+<body class="layui-layout-body">
+
+<div id="LAY_app">
+    <div class="layui-layout layui-layout-admin">
+        <div class="layui-header">
+            <!-- 头部区域 -->
+            <ul class="layui-nav layui-layout-left">
+                <li class="layui-nav-item layadmin-flexible" lay-unselect>
+                    <a href="javascript:;" layadmin-event="flexible" title="侧边伸缩">
+                        <i class="layui-icon layui-icon-shrink-right" id="LAY_app_flexible"></i>
+                    </a>
+                </li>
+                <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                    <a href="http://www.layui.com/admin/" target="_blank" title="前台">
+                        <i class="layui-icon layui-icon-website"></i>
+                    </a>
+                </li>
+                <li class="layui-nav-item" lay-unselect>
+                    <a href="javascript:;" layadmin-event="refresh" title="刷新">
+                        <i class="layui-icon layui-icon-refresh-3"></i>
+                    </a>
+                </li>
+                <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                    <input type="text" placeholder="搜索..." autocomplete="off" class="layui-input layui-input-search" layadmin-event="serach" lay-action="template/search.html?keywords=">
+                </li>
+            </ul>
+            <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
+
+                <li class="layui-nav-item" lay-unselect>
+                    <a lay-href="app/message/index.html" layadmin-event="message" lay-text="消息中心">
+                        <i class="layui-icon layui-icon-notice"></i>
+
+                        <!-- 如果有新消息，则显示小圆点 -->
+                        <span class="layui-badge-dot"></span>
+                    </a>
+                </li>
+                <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                    <a href="javascript:;" layadmin-event="theme">
+                        <i class="layui-icon layui-icon-theme"></i>
+                    </a>
+                </li>
+                <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                    <a href="javascript:;" layadmin-event="note">
+                        <i class="layui-icon layui-icon-note"></i>
+                    </a>
+                </li>
+                <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                    <a href="javascript:;" layadmin-event="fullscreen">
+                        <i class="layui-icon layui-icon-screen-full"></i>
+                    </a>
+                </li>
+                <li class="layui-nav-item" lay-unselect>
+                    <a href="javascript:;">
+                        <cite id="userName">谭斌</cite>
+                    </a>
+                    <dl class="layui-nav-child">
+                        <!--             <dd><a lay-href="set/user/info.html">基本资料</a></dd> -->
+                        <dd><a lay-href="/html/views/user/password.html">修改密码</a></dd>
+                        <hr>
+                        <dd layadmin-event="logout" style="text-align: center;"><a>退出</a></dd>
+                    </dl>
+                </li>
+
+                <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                    <a href="javascript:;" layadmin-event="about"><i class="layui-icon layui-icon-more-vertical"></i></a>
+                </li>
+                <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-unselect>
+                    <a href="javascript:;" layadmin-event="more"><i class="layui-icon layui-icon-more-vertical"></i></a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 侧边菜单 -->
+        <div class="layui-side layui-side-menu">
+            <div class="layui-side-scroll">
+                <div class="layui-logo" lay-href="/html/views/scj/list.html">
+                    <span>数据开发平台 </span>
+                </div>
+
+                <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu" lay-filter="layadmin-system-side-menu">
+                    <!--
+                    <li data-name="home" class="layui-nav-item layui-nav-itemed">
+                      <a href="javascript:;" lay-tips="主页" lay-direction="2">
+                        <i class="layui-icon layui-icon-home"></i>
+                        <cite>主页</cite>
+                      </a>
+                      <dl class="layui-nav-child">
+                        <dd><a lay-href="/html/views/scj/list.html">我的收藏</a></dd>
+                      </dl>
+                    </li>
+                    <li data-name="template" class="layui-nav-item">
+                      <a href="javascript:;" lay-tips="数据开发" lay-direction="2">
+                        <i class="layui-icon layui-icon-template"></i>
+                        <cite>数据开发</cite>
+                      </a>
+                      <dl class="layui-nav-child">
+                        <dd data-name="console" >
+                          <a lay-href="/html/views/app/list.html">应用管理</a>
+                        </dd>
+                        <dd data-name="console">
+                          <a lay-href="/html/views/resource/list.html">资源管理</a>
+                        </dd>
+                        <dd data-name="console">
+                          <a lay-href="/html/views/fileMgt/index.html">文件管理</a>
+                        </dd>
+                        <dd data-name="console">
+                          <a lay-href="/html/views/version/list.html">资源版本管理</a>
+                        </dd>
+                        <dd data-name="console">
+                          <a lay-href="/html/views/db/index.html">数据库管理</a>
+                        </dd>
+                        <dd data-name="console">
+                          <a lay-href="/html/views/index/index.html">文件索引</a>
+                        </dd>
+                        <dd data-name="console">
+                          <a lay-href="/html/views/index/class.html">类索引</a>
+                        </dd>
+                        <dd data-name="console">
+                          <a lay-href="/html/views/index/method.html">方法索引</a>
+                        </dd>
+
+                      </dl>
+                    </li>
+                    <li data-name="template" class="layui-nav-item">
+                      <a href="javascript:;" lay-tips="系统管理" lay-direction="2">
+                        <i class="layui-icon layui-icon-template"></i>
+                        <cite>系统管理</cite>
+                      </a>
+                      <dl class="layui-nav-child">
+                        <dd><a lay-href="/html/views/user/list.html">用户管理</a></dd>
+                      </dl>
+                      <dl class="layui-nav-child">
+                        <dd><a lay-href="/html/views/role/list.html">角色管理</a></dd>
+                      </dl>
+                      <dl class="layui-nav-child">
+                        <dd><a lay-href="/html/views/menu/list.html">菜单管理</a></dd>
+                      </dl>
+
+                    </li>
+                    <li data-name="template" class="layui-nav-item">
+                      <a href="javascript:;" lay-tips="收藏夹" lay-direction="2">
+                        <i class="layui-icon layui-icon-template"></i>
+                        <cite>收藏夹</cite>
+                      </a>
+                      <dl class="layui-nav-child">
+                        <dd><a lay-href="/html/views/scj/list.html">收藏管理</a></dd>
+                      </dl>
+                      <dl class="layui-nav-child">
+                        <dd><a lay-href="/html/views/scj/public.html">公共收藏</a></dd>
+                      </dl>
+                      <dl class="layui-nav-child">
+                        <dd><a lay-href="/html/views/scj/tag/list.html">标签管理</a></dd>
+                      </dl>
+                      <dl class="layui-nav-child">
+                        <dd><a lay-href="/html/views/scj/webtools.html">网页收集工具</a></dd>
+                      </dl>
+
+                    </li>
+                    <li data-name="set" class="layui-nav-item">
+                      <a href="javascript:;" lay-tips="设置" lay-direction="2">
+                        <i class="layui-icon layui-icon-set"></i>
+                        <cite>设置</cite>
+                      </a>
+                      <dl class="layui-nav-child">
+                        <dd class="layui-nav-itemed">
+                          <a href="javascript:;">系统设置</a>
+                          <dl class="layui-nav-child">
+                            <dd><a lay-href="/api/app/page?page=1&limit=10&id=&appName=&contextPath=&c=true">清理缓存</a></dd>
+                          </dl>
+                        </dd>
+                      </dl>
+                    </li>
+                    -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- 页面标签 -->
+        <div class="layadmin-pagetabs" id="LAY_app_tabs">
+            <div class="layui-icon layadmin-tabs-control layui-icon-prev" layadmin-event="leftPage"></div>
+            <div class="layui-icon layadmin-tabs-control layui-icon-next" layadmin-event="rightPage"></div>
+            <div class="layui-icon layadmin-tabs-control layui-icon-down">
+                <ul class="layui-nav layadmin-tabs-select" lay-filter="layadmin-pagetabs-nav">
+                    <li class="layui-nav-item" lay-unselect>
+                        <a href="javascript:;"></a>
+                        <dl class="layui-nav-child layui-anim-fadein">
+                            <dd layadmin-event="closeThisTabs"><a href="javascript:;">关闭当前标签页</a></dd>
+                            <dd layadmin-event="closeOtherTabs"><a href="javascript:;">关闭其它标签页</a></dd>
+                            <dd layadmin-event="closeAllTabs"><a href="javascript:;">关闭全部标签页</a></dd>
+                            <dd layadmin-event="newWindow"><a href="javascript:;">新窗口打开</a></dd>
+                        </dl>
+                    </li>
+                </ul>
+            </div>
+            <div class="layui-tab" lay-unauto lay-allowClose="true" lay-filter="layadmin-layout-tabs">
+                <ul class="layui-tab-title" id="LAY_app_tabsheader">
+                    <li lay-id="/html/views/scj/myList.html" lay-attr="/html/views/scj/myList.html" class="layui-this"><i class="layui-icon layui-icon-home"></i></li>
+                </ul>
+            </div>
+        </div>
+
+
+        <!-- 主体内容 -->
+        <div class="layui-body" id="LAY_app_body">
+            <div class="layadmin-tabsbody-item layui-show">
+                <iframe src="/html/views/scj/myList.html" frameborder="0" class="layadmin-iframe"></iframe>
+            </div>
+        </div>
+
+        <!-- 辅助元素，一般用于移动设备下遮罩 -->
+        <div class="layadmin-body-shade" layadmin-event="shade"></div>
+    </div>
+</div>
+
+<script src="/html/layui/layui.js"></script>
+<script id="demo" type="text/html">
+    {{#  layui.each(d.list, function(index, item){ }}
+    <li data-name="set" class="layui-nav-item">
+        <a href="javascript:;" lay-tips="{{ item.name }}" lay-direction="2">
+            <i class="layui-icon layui-icon-set"></i>
+            <cite>{{ item.name }}</cite>
+        </a>
+
+        <dl class="layui-nav-child">
+            {{#  layui.each(item.children, function(index, children){ }}
+            <dd class="layui-nav-itemed">
+                {{#  if(children.url){ }}
+                <a lay-href="{{ children.url }}">{{ children.name }}</a>
+                {{# } }}
+                {{#  if(!children.url){ }}
+                <a >{{ children.name }}</a>
+                {{# } }}
+                {{#  layui.each(children.children, function(index, children2){ }}
+                <dl class="layui-nav-child">
+                    <dd><a lay-href="{{ children2.url }}">{{ children2.name }}</a></dd>
+                </dl>
+                {{#  }); }}
+            </dd>
+            {{#  }); }}
+        </dl>
+
+    </li>
+    {{#  }); }}
+</script>
+<script>
+    layui.config({
+        base: '/html/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index','laytpl'],function(){
+        var $ = layui.$;
+        var laytpl = layui.laytpl;
+        $(document).keydown(function(e){
+            //70:F 72:G 72:H
+            if(e.ctrlKey && e.which==70||
+                e.ctrlKey && e.which==71||
+                e.ctrlKey && e.which==72
+            ){
+                e.preventDefault();
+                e.keyCode = false;//加上这一句
+            }
+        });
+        $.ajax({
+            async : true,
+            "url" : "/api/user/current",
+            "global" : false,
+            "type" : "GET",
+            "contentType": "application/json; charset=utf-8",
+            "dataType" : "json",
+            "timeout" : "60000",
+            "traditional":true,
+            "success" : function(a,b,c){
+                if(a.v){
+                    var user=JSON.parse(a.v);
+                    $("#userName").html(user.userName);
+                }
+            },
+            "error" : function(err, msg, code) {
+                return false;
+            }
+        });
+        function listToTree(oldArr){
+            oldArr.forEach(element => {
+                let parentId = element.parentId;
+                if(parentId !== "0"){
+                    oldArr.forEach(ele => {
+                        if(ele.id == parentId){ //当内层循环的ID== 外层循环的parendId时，（说明有children），需要往该内层id里建个children并push对应的数组；
+                            if(!ele.children){
+                                ele.children = [];
+                            }
+                            ele.children.push(element);
+                        }
+                    });
+                }
+            });
+//       console.log(oldArr) //此时的数组是在原基础上补充了children;
+            oldArr = oldArr.filter(ele => ele.parentId === "0"); //这一步是过滤，按树展开，将多余的数组剔除；
+//       console.log(oldArr)
+            return oldArr;
+        }
+        $.ajax({
+            async : true,
+            "url" : "/api/menu/my?page=1&limit=999",
+            "global" : false,
+            "type" : "GET",
+            "contentType": "application/json; charset=utf-8",
+            "dataType" : "json",
+            "timeout" : "60000",
+            "traditional":true,
+            "success" : function(a,b,c){
+                if(a.v && a.v.collection){
+                    var menus=a.v.collection;
+                    var menus1=listToTree(menus);
+                    menus1={
+                        list:menus1
+                    };
+                    var getTpl = demo.innerHTML;
+                    laytpl(getTpl).render(menus1, function(html){
+                        $("#LAY-system-side-menu").append(html);
+                        layui.element.init();
+                    });
+
+
+                }
+            },
+            "error" : function(err, msg, code) {
+                return false;
+            }
+        });
+    });
+</script>
+
+
+</body>
+</html>
+
+
