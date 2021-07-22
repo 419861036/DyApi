@@ -111,7 +111,7 @@
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz</artifactId>
-			<version>2.3.0</version>
+			<version>2.3.2</version>
 		</dependency>
 		<!-- 将日志重定向到 logback-->
 		<!-- https://mvnrepository.com/artifact/uk.org.lidalia/sysout-over-slf4j -->
